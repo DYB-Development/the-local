@@ -8,4 +8,8 @@ describe("public entry", () => {
   it("re-exports the three companion agents", () => {
     expect(api.companionAgents).toHaveLength(3);
   });
+
+  it("re-exports the provider-authoring API", () => {
+    expect(typeof api.scaffoldProvider).toBe("function");
+  });
 });
