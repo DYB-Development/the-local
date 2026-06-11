@@ -6,6 +6,7 @@
   "engines": {
     "node": ">=20"
   },
+  "files": ["dist", "README.md"],
   "bin": {
     "the-local": "dist/cli.js"
   },

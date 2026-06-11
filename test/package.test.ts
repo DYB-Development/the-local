@@ -14,4 +14,8 @@ describe("package publishability", () => {
   it("is not marked private", () => {
     expect(pkg.private).toBeUndefined();
   });
+
+  it("ships only the built output and README", () => {
+    expect(pkg.files).toEqual(["dist", "README.md"]);
+  });
 });
