@@ -49,4 +49,13 @@ describe("scaffoldProvider", () => {
     scaffoldProvider(dir);
     expect(readFileSync(join(dir, "the-local.config.js"), "utf8")).toContain('"prefix": "core"');
   });
+
+  it("declares the the-local provider block in package.json", () => {
+    const dir = newPackage();
+    scaffoldProvider(dir);
+    expect(readPackage(dir)["the-local"]).toMatchObject({
+      prefix: "core",
+      agentsDir: "the-local/agents",
+    });
+  });
 });

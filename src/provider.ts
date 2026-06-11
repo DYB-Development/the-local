@@ -70,7 +70,8 @@ export function starterConfig(packageName: string): ProviderConfig {
 // Scaffold the provider side into a package: write a starter config (without
 // clobbering an authored one). Later cycles wire package.json and render.
 export function scaffoldProvider(packageDir: string): { config: ProviderConfig } {
-  const manifest = JSON.parse(readFileSync(join(packageDir, "package.json"), "utf8")) as {
+  const manifestPath = join(packageDir, "package.json");
+  const manifest = JSON.parse(readFileSync(manifestPath, "utf8")) as Record<string, unknown> & {
     name: string;
   };
   const config = starterConfig(manifest.name);
@@ -79,6 +80,13 @@ export function scaffoldProvider(packageDir: string): { config: ProviderConfig }
   if (!existsSync(configPath)) {
     writeFileSync(configPath, `export default ${JSON.stringify(config, null, 2)};\n`);
   }
+
+  manifest["the-local"] = {
+    prefix: config.prefix,
+    scope: config.scope,
+    agentsDir: config.agentsDir ?? DEFAULT_AGENTS_DIR,
+  };
+  writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
 
   return { config };
 }
