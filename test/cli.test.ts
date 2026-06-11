@@ -1,8 +1,21 @@
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, realpathSync, symlinkSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+import { pathToFileURL } from "node:url";
 import { describe, expect, it } from "vitest";
-import { run } from "../src/cli.js";
+import { isEntrypoint, run } from "../src/cli.js";
 import { tmpDir, writeHost, writeProvider } from "./helpers.js";
+
+describe("isEntrypoint", () => {
+  it("matches when the module is invoked through a symlinked bin", () => {
+    const dir = tmpDir();
+    const real = join(dir, "cli.js");
+    const link = join(dir, "the-local");
+    writeFileSync(real, "");
+    symlinkSync(real, link);
+    const moduleUrl = pathToFileURL(realpathSync(real)).href;
+    expect(isEntrypoint(moduleUrl, link)).toBe(true);
+  });
+});
 
 describe("cli run", () => {
   it("returns a non-zero code for an unknown command", () => {

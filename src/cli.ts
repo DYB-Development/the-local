@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { realpathSync } from "node:fs";
 import { pathToFileURL } from "node:url";
 import { installLocals } from "./installer.js";
 
@@ -18,7 +19,14 @@ export function run(argv: string[], hostDir: string): number {
   return 0;
 }
 
-const invokedPath = process.argv[1];
-if (invokedPath && import.meta.url === pathToFileURL(invokedPath).href) {
+// Node sets `import.meta.url` to the module's real path, but leaves
+// `process.argv[1]` as the symlink npm creates in `node_modules/.bin`. Resolve
+// the symlink before comparing so the CLI still runs when invoked via `npx`.
+export function isEntrypoint(moduleUrl: string, invokedPath: string | undefined): boolean {
+  if (!invokedPath) return false;
+  return moduleUrl === pathToFileURL(realpathSync(invokedPath)).href;
+}
+
+if (isEntrypoint(import.meta.url, process.argv[1])) {
   process.exit(run(process.argv.slice(2), process.cwd()));
 }
