@@ -48,3 +48,14 @@ describe("release workflow", () => {
     expect(publishWorkflow).toContain("tags:\n      - \"v*\"");
   });
 });
+
+const releasingDoc = readFileSync(
+  fileURLToPath(new URL("../docs/RELEASING.md", import.meta.url)),
+  "utf8",
+);
+
+describe("version policy", () => {
+  it("documents semantic versioning", () => {
+    expect(releasingDoc).toContain("Semantic Versioning");
+  });
+});
