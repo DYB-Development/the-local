@@ -76,10 +76,14 @@ export function scaffoldProvider(packageDir: string): { config: ProviderConfig }
   };
   const config = starterConfig(manifest.name);
 
+  // Never clobber an authored config: if one already exists, the package is a
+  // provider already — leave its config, package.json, and rendered agents
+  // alone and let `the-local build` re-render from the author's config.
   const configPath = join(packageDir, CONFIG_FILE);
-  if (!existsSync(configPath)) {
-    writeFileSync(configPath, `export default ${JSON.stringify(config, null, 2)};\n`);
-  }
+  const created = !existsSync(configPath);
+  if (!created) return { config, created };
+
+  writeFileSync(configPath, `export default ${JSON.stringify(config, null, 2)};\n`);
 
   const agentsDir = config.agentsDir ?? DEFAULT_AGENTS_DIR;
   manifest["the-local"] = { prefix: config.prefix, scope: config.scope, agentsDir };
@@ -92,5 +96,5 @@ export function scaffoldProvider(packageDir: string): { config: ProviderConfig }
 
   renderProvider(config, packageDir);
 
-  return { config };
+  return { config, created };
 }

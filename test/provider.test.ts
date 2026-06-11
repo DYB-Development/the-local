@@ -73,4 +73,11 @@ describe("scaffoldProvider", () => {
       toMarkdown({ prefix: config.prefix, ...info! }),
     );
   });
+
+  it("does not render starter agents over an existing config", () => {
+    const dir = newPackage();
+    writeFileSync(join(dir, "the-local.config.js"), "export default { prefix: 'custom', agents: [] };\n");
+    scaffoldProvider(dir);
+    expect(existsSync(join(dir, "the-local/agents/core-info.md"))).toBe(false);
+  });
 });
