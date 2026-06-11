@@ -18,4 +18,8 @@ describe("package publishability", () => {
   it("ships only the built output and README", () => {
     expect(pkg.files).toEqual(["dist", "README.md"]);
   });
+
+  it("resolves its main entry to the built output", () => {
+    expect(pkg.main).toBe("dist/index.js");
+  });
 });
