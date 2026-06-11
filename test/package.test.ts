@@ -36,6 +36,11 @@ describe("package publishability", () => {
     const scripts = pkg.scripts as Record<string, string>;
     expect(scripts.prepublishOnly).toBe("pnpm build");
   });
+
+  it("builds dist on install so git-dependency consumers get the built output", () => {
+    const scripts = pkg.scripts as Record<string, string>;
+    expect(scripts.prepare).toBe("pnpm build");
+  });
 });
 
 const publishWorkflow = readFileSync(
