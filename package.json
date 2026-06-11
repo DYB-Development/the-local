@@ -7,6 +7,11 @@
     "node": ">=20"
   },
   "files": ["dist", "README.md"],
+  "the-local": {
+    "prefix": "the-local",
+    "scope": "Claude Code locals — packages ship subagents that the-local installs into a host app",
+    "agentsDir": "the-local/agents"
+  },
   "main": "dist/index.js",
   "bin": {
     "the-local": "dist/cli.js"

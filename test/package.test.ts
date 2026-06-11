@@ -59,3 +59,13 @@ describe("version policy", () => {
     expect(releasingDoc).toContain("Semantic Versioning");
   });
 });
+
+describe("self-provider declaration", () => {
+  it("declares the-local as its own the-local provider", () => {
+    expect(pkg["the-local"]).toEqual({
+      prefix: "the-local",
+      scope: "Claude Code locals — packages ship subagents that the-local installs into a host app",
+      agentsDir: "the-local/agents",
+    });
+  });
+});
