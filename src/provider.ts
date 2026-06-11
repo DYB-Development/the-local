@@ -70,7 +70,7 @@ export function starterConfig(packageName: string): ProviderConfig {
 
 // Scaffold the provider side into a package: write a starter config (without
 // clobbering an authored one). Later cycles wire package.json and render.
-export function scaffoldProvider(packageDir: string): { config: ProviderConfig } {
+export function scaffoldProvider(packageDir: string): { config: ProviderConfig; created: boolean } {
   const manifestPath = join(packageDir, "package.json");
   const manifest = JSON.parse(readFileSync(manifestPath, "utf8")) as Record<string, unknown> & {
     name: string;
