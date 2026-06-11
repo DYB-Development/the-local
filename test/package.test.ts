@@ -31,4 +31,9 @@ describe("package publishability", () => {
       },
     });
   });
+
+  it("rebuilds the dist before publishing", () => {
+    const scripts = pkg.scripts as Record<string, string>;
+    expect(scripts.prepublishOnly).toBe("pnpm build");
+  });
 });
