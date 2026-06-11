@@ -2,7 +2,7 @@
 import { realpathSync } from "node:fs";
 import { pathToFileURL } from "node:url";
 import { installLocals } from "./installer.js";
-import { scaffoldProvider } from "./provider.js";
+import { buildProvider, scaffoldProvider } from "./provider.js";
 
 const COMMANDS = new Set(["install", "refresh"]);
 
@@ -34,6 +34,11 @@ export async function main(argv: string[], cwd: string): Promise<number> {
         ? `the-local: scaffolded provider "${config.prefix}" — edit the-local.config.js, then run the-local build.\n`
         : `the-local: the-local.config.js already exists; run the-local build to re-render.\n`,
     );
+    return 0;
+  }
+  if (command === "build") {
+    const written = await buildProvider(target ?? cwd);
+    process.stdout.write(`the-local: rendered ${written.length} agent(s).\n`);
     return 0;
   }
   return run(argv, cwd);

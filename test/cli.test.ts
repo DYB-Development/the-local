@@ -45,3 +45,19 @@ describe("provider command", () => {
     expect(existsSync(join(dir, "the-local.config.js"))).toBe(true);
   });
 });
+
+describe("build command", () => {
+  it("re-renders a provider's agents from its config", async () => {
+    const dir = tmpDir();
+    writeFileSync(join(dir, "package.json"), JSON.stringify({ name: "@event-engine/store", version: "0.0.0" }));
+    const agent = { name: "info", description: "D", tools: "Read", body: "B", knowledge: "K" };
+    writeFileSync(
+      join(dir, "the-local.config.js"),
+      `export default ${JSON.stringify({ prefix: "store", agents: [agent] })};\n`,
+    );
+
+    await main(["build"], dir);
+
+    expect(existsSync(join(dir, "the-local/agents/store-info.md"))).toBe(true);
+  });
+});
