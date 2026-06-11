@@ -21,7 +21,7 @@ Ruby gem. A provider package commits its agent `.md` files; a host runs
 - **Cross-language contract.** The agent `.md` format and the `CLAUDE.md`
   `<!-- the_local:begin -->` / `<!-- the_local:end -->` markers are identical to
   the Ruby gem's, so a Ruby gem and a TS package install into the same host
-  without clobbering each other.
+  without clobbering each other. See [`docs/contract.md`](docs/contract.md).
 
 ## Use (host app)
 
