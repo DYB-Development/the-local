@@ -1,4 +1,4 @@
-import { mkdirSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { type Agent, agentFilename, toMarkdown } from "./agent.js";
 
@@ -35,4 +35,50 @@ export function renderProvider(config: ProviderConfig, packageDir: string): stri
     writeFileSync(path, toMarkdown(agent));
     return path;
   });
+}
+
+const CONFIG_FILE = "the-local.config.js";
+
+// The starter config a freshly-scaffolded provider gets: the standard interface
+// of a read-only `info` explainer and a `develop` domain worker, with TODO
+// placeholders the author fills in. Mirrors the Ruby provider generator.
+export function starterConfig(packageName: string): ProviderConfig {
+  const prefix = prefixFromName(packageName);
+  const knowledge = `## ${prefix}\n\nTODO: document ${packageName} — what it does, how to use it, the conventions to enforce.`;
+  return {
+    prefix,
+    scope: `TODO: one-line phrase describing ${packageName}'s domain`,
+    agents: [
+      {
+        name: "info",
+        description: `Use to learn what ${packageName} offers and how to use it.`,
+        tools: "Read",
+        body: `You explain ${packageName}, answering only from the reference. You make no changes.`,
+        knowledge,
+      },
+      {
+        name: "develop",
+        description: `Use PROACTIVELY for work involving ${packageName}.`,
+        tools: "Read, Write, Edit, Grep",
+        body: `You do work involving ${packageName}, following the reference's conventions exactly.`,
+        knowledge,
+      },
+    ],
+  };
+}
+
+// Scaffold the provider side into a package: write a starter config (without
+// clobbering an authored one). Later cycles wire package.json and render.
+export function scaffoldProvider(packageDir: string): { config: ProviderConfig } {
+  const manifest = JSON.parse(readFileSync(join(packageDir, "package.json"), "utf8")) as {
+    name: string;
+  };
+  const config = starterConfig(manifest.name);
+
+  const configPath = join(packageDir, CONFIG_FILE);
+  if (!existsSync(configPath)) {
+    writeFileSync(configPath, `export default ${JSON.stringify(config, null, 2)};\n`);
+  }
+
+  return { config };
 }

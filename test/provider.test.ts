@@ -1,9 +1,19 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { toMarkdown } from "../src/agent.js";
-import { prefixFromName, renderProvider } from "../src/provider.js";
+import { prefixFromName, renderProvider, scaffoldProvider } from "../src/provider.js";
 import { tmpDir } from "./helpers.js";
+
+function newPackage(name = "@event-engine/core"): string {
+  const dir = tmpDir();
+  writeFileSync(join(dir, "package.json"), JSON.stringify({ name, version: "0.0.0" }, null, 2));
+  return dir;
+}
+
+function readPackage(dir: string): Record<string, unknown> {
+  return JSON.parse(readFileSync(join(dir, "package.json"), "utf8"));
+}
 
 describe("prefixFromName", () => {
   it("drops the npm scope so @event-engine/core becomes core", () => {
@@ -30,5 +40,13 @@ describe("renderProvider", () => {
     expect(readFileSync(join(dir, "the-local/agents/core-info.md"), "utf8")).toBe(
       toMarkdown({ prefix: "core", name: "info", description: "D", tools: "Read", body: "B", knowledge: "K" }),
     );
+  });
+});
+
+describe("scaffoldProvider", () => {
+  it("writes a starter the-local.config.js using the derived prefix", () => {
+    const dir = newPackage();
+    scaffoldProvider(dir);
+    expect(readFileSync(join(dir, "the-local.config.js"), "utf8")).toContain('"prefix": "core"');
   });
 });
