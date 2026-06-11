@@ -1,6 +1,16 @@
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
+import { type Agent, agentFilename, toMarkdown } from "../src/agent.js";
 import { companionAgents } from "../src/companion.js";
 import { reference } from "../src/reference.js";
+
+function committed(agent: Agent): string {
+  return readFileSync(
+    fileURLToPath(new URL(`../the-local/agents/${agentFilename(agent)}`, import.meta.url)),
+    "utf8",
+  );
+}
 
 // the-local is its own provider: it ships three companion locals so any host
 // that depends on the-local gains experts that explain, install, and extend it.
@@ -46,5 +56,12 @@ describe("companion agents", () => {
       tools: "Read, Write, Edit, Grep",
       knowledge: reference,
     });
+  });
+});
+
+describe("committed companion files", () => {
+  it("renders the-local-info.md from its agent", () => {
+    const info = agent("info") as Agent;
+    expect(committed(info)).toBe(toMarkdown(info));
   });
 });
