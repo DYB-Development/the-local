@@ -90,5 +90,7 @@ export function scaffoldProvider(packageDir: string): { config: ProviderConfig }
 
   writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
 
+  renderProvider(config, packageDir);
+
   return { config };
 }

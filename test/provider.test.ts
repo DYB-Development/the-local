@@ -64,4 +64,13 @@ describe("scaffoldProvider", () => {
     scaffoldProvider(dir);
     expect(readPackage(dir).files).toContain("the-local/agents");
   });
+
+  it("renders the starter agents to committed files", () => {
+    const dir = newPackage();
+    const { config } = scaffoldProvider(dir);
+    const info = config.agents.find((a) => a.name === "info");
+    expect(readFileSync(join(dir, "the-local/agents/core-info.md"), "utf8")).toBe(
+      toMarkdown({ prefix: config.prefix, ...info! }),
+    );
+  });
 });
