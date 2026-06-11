@@ -3,3 +3,5 @@ export { BEGIN_MARKER, END_MARKER, type ProviderTrigger, delegationRule, mergeTr
 export { type ScopeInput, allowedProviders } from "./scope.js";
 export { type DiscoveredProvider, directDependencies, discoverProviders } from "./discovery.js";
 export { type InstallResult, installAgents, installLocals, writeTrigger } from "./installer.js";
+export { reference } from "./reference.js";
+export { companionAgents } from "./companion.js";
