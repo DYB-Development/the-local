@@ -2,7 +2,7 @@ import { existsSync, readFileSync, realpathSync, symlinkSync, writeFileSync } fr
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 import { describe, expect, it } from "vitest";
-import { isEntrypoint, run } from "../src/cli.js";
+import { isEntrypoint, main, run } from "../src/cli.js";
 import { tmpDir, writeHost, writeProvider } from "./helpers.js";
 
 describe("isEntrypoint", () => {
@@ -34,5 +34,30 @@ describe("cli run", () => {
     expect(run(["install"], dir)).toBe(0);
     expect(readFileSync(join(dir, ".claude/agents/keystone-scaffold.md"), "utf8")).toBe("AGENT");
     expect(existsSync(join(dir, "CLAUDE.md"))).toBe(true);
+  });
+});
+
+describe("provider command", () => {
+  it("scaffolds the current package as a provider", async () => {
+    const dir = tmpDir();
+    writeFileSync(join(dir, "package.json"), JSON.stringify({ name: "@event-engine/store", version: "0.0.0" }));
+    await main(["provider"], dir);
+    expect(existsSync(join(dir, "the-local.config.js"))).toBe(true);
+  });
+});
+
+describe("build command", () => {
+  it("re-renders a provider's agents from its config", async () => {
+    const dir = tmpDir();
+    writeFileSync(join(dir, "package.json"), JSON.stringify({ name: "@event-engine/store", version: "0.0.0" }));
+    const agent = { name: "info", description: "D", tools: "Read", body: "B", knowledge: "K" };
+    writeFileSync(
+      join(dir, "the-local.config.js"),
+      `export default ${JSON.stringify({ prefix: "store", agents: [agent] })};\n`,
+    );
+
+    await main(["build"], dir);
+
+    expect(existsSync(join(dir, "the-local/agents/store-info.md"))).toBe(true);
   });
 });

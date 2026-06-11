@@ -73,3 +73,14 @@ Only the host's **direct** dependencies contribute locals; transitive providers
 are filtered out. A provider counts as in-scope when it is a direct dependency,
 or when it is not an installed package at all (e.g. the host app itself
 declaring locals). This mirrors the Ruby `Scope` rule.
+
+## 4. Authoring a provider
+
+`the-local provider [dir]` turns a package into a provider (the analog of Ruby's
+`the_local:provider` generator): it writes a starter `the-local.config.js` —
+plain ESM data (`prefix`, `scope`, `agents`) with no runtime dependency on
+the-local — adds the `"the-local"` block and `the-local/agents` to the package's
+`files`, and renders the initial committed `.md`. After editing the config,
+`the-local build [dir]` re-renders the committed agents from it. The committed
+`.md` remain the contract a host reads (§1); the config is only the source they
+are built from.

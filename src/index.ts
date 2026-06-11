@@ -5,3 +5,12 @@ export { type DiscoveredProvider, directDependencies, discoverProviders } from "
 export { type InstallResult, installAgents, installLocals, writeTrigger } from "./installer.js";
 export { reference } from "./reference.js";
 export { companionAgents } from "./companion.js";
+export {
+  type ProviderAgentSpec,
+  type ProviderConfig,
+  buildProvider,
+  prefixFromName,
+  renderProvider,
+  scaffoldProvider,
+  starterConfig,
+} from "./provider.js";
