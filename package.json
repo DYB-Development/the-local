@@ -6,7 +6,7 @@
   "engines": {
     "node": ">=20"
   },
-  "files": ["dist", "README.md"],
+  "files": ["dist", "README.md", "the-local/agents"],
   "the-local": {
     "prefix": "the-local",
     "scope": "Claude Code locals — packages ship subagents that the-local installs into a host app",
