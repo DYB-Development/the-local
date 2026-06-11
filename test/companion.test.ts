@@ -69,4 +69,9 @@ describe("committed companion files", () => {
     const install = agent("install") as Agent;
     expect(committed(install)).toBe(toMarkdown(install));
   });
+
+  it("renders the-local-develop.md from its agent", () => {
+    const develop = agent("develop") as Agent;
+    expect(committed(develop)).toBe(toMarkdown(develop));
+  });
 });
