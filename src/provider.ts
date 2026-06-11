@@ -1,5 +1,6 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+import { pathToFileURL } from "node:url";
 import { type Agent, agentFilename, toMarkdown } from "./agent.js";
 
 const DEFAULT_AGENTS_DIR = "the-local/agents";
@@ -97,4 +98,13 @@ export function scaffoldProvider(packageDir: string): { config: ProviderConfig }
   renderProvider(config, packageDir);
 
   return { config, created };
+}
+
+// Re-render a provider's committed agents from its authored `the-local.config.js`
+// (the analog of Ruby's `rake the_local:build`). Loaded by dynamic import so the
+// config stays plain ESM data with no toolchain — run after editing the config.
+export async function buildProvider(packageDir: string): Promise<string[]> {
+  const configUrl = pathToFileURL(join(packageDir, CONFIG_FILE)).href;
+  const loaded = (await import(configUrl)) as { default: ProviderConfig };
+  return renderProvider(loaded.default, packageDir);
 }

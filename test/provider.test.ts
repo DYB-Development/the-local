@@ -2,7 +2,7 @@ import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { toMarkdown } from "../src/agent.js";
-import { prefixFromName, renderProvider, scaffoldProvider } from "../src/provider.js";
+import { buildProvider, prefixFromName, renderProvider, scaffoldProvider } from "../src/provider.js";
 import { tmpDir } from "./helpers.js";
 
 function newPackage(name = "@event-engine/core"): string {
@@ -79,5 +79,22 @@ describe("scaffoldProvider", () => {
     writeFileSync(join(dir, "the-local.config.js"), "export default { prefix: 'custom', agents: [] };\n");
     scaffoldProvider(dir);
     expect(existsSync(join(dir, "the-local/agents/core-info.md"))).toBe(false);
+  });
+});
+
+describe("buildProvider", () => {
+  it("re-renders committed agents from the the-local.config.js", async () => {
+    const dir = newPackage();
+    const agent = { name: "info", description: "D", tools: "Read", body: "B", knowledge: "K" };
+    writeFileSync(
+      join(dir, "the-local.config.js"),
+      `export default ${JSON.stringify({ prefix: "store", agents: [agent] })};\n`,
+    );
+
+    await buildProvider(dir);
+
+    expect(readFileSync(join(dir, "the-local/agents/store-info.md"), "utf8")).toBe(
+      toMarkdown({ prefix: "store", ...agent }),
+    );
   });
 });
