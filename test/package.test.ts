@@ -15,8 +15,8 @@ describe("package publishability", () => {
     expect(pkg.private).toBeUndefined();
   });
 
-  it("ships only the built output and README", () => {
-    expect(pkg.files).toEqual(["dist", "README.md"]);
+  it("ships the built output, README, and the committed companion agents", () => {
+    expect(pkg.files).toEqual(["dist", "README.md", "the-local/agents"]);
   });
 
   it("resolves its main entry to the built output", () => {
@@ -57,5 +57,15 @@ const releasingDoc = readFileSync(
 describe("version policy", () => {
   it("documents semantic versioning", () => {
     expect(releasingDoc).toContain("Semantic Versioning");
+  });
+});
+
+describe("self-provider declaration", () => {
+  it("declares the-local as its own the-local provider", () => {
+    expect(pkg["the-local"]).toEqual({
+      prefix: "the-local",
+      scope: "Claude Code locals — packages ship subagents that the-local installs into a host app",
+      agentsDir: "the-local/agents",
+    });
   });
 });

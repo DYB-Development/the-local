@@ -6,7 +6,12 @@
   "engines": {
     "node": ">=20"
   },
-  "files": ["dist", "README.md"],
+  "files": ["dist", "README.md", "the-local/agents"],
+  "the-local": {
+    "prefix": "the-local",
+    "scope": "Claude Code locals — packages ship subagents that the-local installs into a host app",
+    "agentsDir": "the-local/agents"
+  },
   "main": "dist/index.js",
   "bin": {
     "the-local": "dist/cli.js"
@@ -19,6 +24,7 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.build.json && chmod +x dist/cli.js",
+    "build:agents": "pnpm build && node scripts/build-companion.mjs",
     "prepublishOnly": "pnpm build",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
