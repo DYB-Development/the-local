@@ -23,4 +23,17 @@ export const companionAgents: Agent[] = [
       "host delegate, and only direct dependencies contribute. You make no changes.",
     knowledge: reference,
   },
+  {
+    prefix: PREFIX,
+    name: "install",
+    description: "Use to add the-local to a host app and set it up correctly.",
+    tools: "Bash, Read, Edit",
+    body:
+      "You set the-local up in a host package or app, following the reference's " +
+      "install section exactly: add the-local to the host's dependencies, install, " +
+      "run `the-local install` to sync locals into .claude/agents/ and write the " +
+      "delegation trigger, and re-run it after dependency changes. You do not " +
+      "invent steps the reference does not list.",
+    knowledge: reference,
+  },
 ];

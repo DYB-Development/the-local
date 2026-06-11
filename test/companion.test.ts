@@ -29,4 +29,13 @@ describe("companion agents", () => {
       knowledge: reference,
     });
   });
+
+  it("offers an install agent that can edit the host", () => {
+    expect(wiring("install")).toEqual({
+      prefix: "the-local",
+      name: "install",
+      tools: "Bash, Read, Edit",
+      knowledge: reference,
+    });
+  });
 });
