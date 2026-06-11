@@ -81,11 +81,13 @@ export function scaffoldProvider(packageDir: string): { config: ProviderConfig }
     writeFileSync(configPath, `export default ${JSON.stringify(config, null, 2)};\n`);
   }
 
-  manifest["the-local"] = {
-    prefix: config.prefix,
-    scope: config.scope,
-    agentsDir: config.agentsDir ?? DEFAULT_AGENTS_DIR,
-  };
+  const agentsDir = config.agentsDir ?? DEFAULT_AGENTS_DIR;
+  manifest["the-local"] = { prefix: config.prefix, scope: config.scope, agentsDir };
+
+  const files = Array.isArray(manifest.files) ? (manifest.files as string[]) : [];
+  if (!files.includes(agentsDir)) files.push(agentsDir);
+  manifest.files = files;
+
   writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
 
   return { config };

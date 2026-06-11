@@ -58,4 +58,10 @@ describe("scaffoldProvider", () => {
       agentsDir: "the-local/agents",
     });
   });
+
+  it("adds the agents dir to the files allowlist so it publishes", () => {
+    const dir = newPackage();
+    scaffoldProvider(dir);
+    expect(readPackage(dir).files).toContain("the-local/agents");
+  });
 });
