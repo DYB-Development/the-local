@@ -37,3 +37,14 @@ describe("package publishability", () => {
     expect(scripts.prepublishOnly).toBe("pnpm build");
   });
 });
+
+const publishWorkflow = readFileSync(
+  fileURLToPath(new URL("../.github/workflows/publish.yml", import.meta.url)),
+  "utf8",
+);
+
+describe("release workflow", () => {
+  it("releases on version tags", () => {
+    expect(publishWorkflow).toContain("tags:\n      - \"v*\"");
+  });
+});
