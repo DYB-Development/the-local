@@ -38,4 +38,13 @@ describe("companion agents", () => {
       knowledge: reference,
     });
   });
+
+  it("offers a develop agent that authors providers", () => {
+    expect(wiring("develop")).toEqual({
+      prefix: "the-local",
+      name: "develop",
+      tools: "Read, Write, Edit, Grep",
+      knowledge: reference,
+    });
+  });
 });

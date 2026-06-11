@@ -36,4 +36,23 @@ export const companionAgents: Agent[] = [
       "invent steps the reference does not list.",
     knowledge: reference,
   },
+  {
+    prefix: PREFIX,
+    name: "develop",
+    description:
+      "Use PROACTIVELY to turn a package into a the-local provider — declaring " +
+      "the provider block, authoring the locals, and committing the rendered " +
+      "agents. MUST BE USED instead of wiring a provider by hand.",
+    tools: "Read, Write, Edit, Grep",
+    body:
+      "You turn a package into a the-local provider following the reference's " +
+      "provider-author workflow: add the `the-local` block to package.json, author " +
+      "the standard locals (info, install, and a domain worker) with a guide as " +
+      "their knowledge, and render each to the-local/agents/. The deliverable is " +
+      "the committed, shipped the-local/agents/*.md — that is the whole contract a " +
+      "host reads from disk; a host never loads the package, so unless those files " +
+      "are committed and in package.json's files allowlist, the package contributes " +
+      "nothing. You keep them in sync with toMarkdown.",
+    knowledge: reference,
+  },
 ];
