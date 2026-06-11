@@ -22,4 +22,13 @@ describe("package publishability", () => {
   it("resolves its main entry to the built output", () => {
     expect(pkg.main).toBe("dist/index.js");
   });
+
+  it("exposes its public entry as built types and JS", () => {
+    expect(pkg.exports).toEqual({
+      ".": {
+        types: "./dist/index.d.ts",
+        default: "./dist/index.js",
+      },
+    });
+  });
 });
