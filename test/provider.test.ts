@@ -2,8 +2,14 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { toMarkdown } from "../src/agent.js";
-import { renderProvider } from "../src/provider.js";
+import { prefixFromName, renderProvider } from "../src/provider.js";
 import { tmpDir } from "./helpers.js";
+
+describe("prefixFromName", () => {
+  it("drops the npm scope so @event-engine/core becomes core", () => {
+    expect(prefixFromName("@event-engine/core")).toBe("core");
+  });
+});
 
 // renderProvider turns a provider's plain-data config into the committed `.md`
 // files a host installs — the same render the-local uses for its own companion,

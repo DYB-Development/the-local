@@ -4,6 +4,12 @@ import { type Agent, agentFilename, toMarkdown } from "./agent.js";
 
 const DEFAULT_AGENTS_DIR = "the-local/agents";
 
+// The agent filename namespace defaults to the package name with any npm scope
+// dropped: `@event-engine/core` -> `core`.
+export function prefixFromName(packageName: string): string {
+  return packageName.replace(/^@[^/]+\//, "");
+}
+
 // A provider's plain-data config: the source of truth the-local renders into the
 // committed `.md` files a host installs. Authored as `the-local.config.js` (ESM)
 // at the package root, so it has no runtime dependency on the-local itself.
