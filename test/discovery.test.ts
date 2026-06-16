@@ -14,4 +14,14 @@ describe("directDependencies", () => {
     writeManifest(dir, { name: "host", devDependencies: { keystone_ui: "*" } });
     expect(directDependencies(dir)).toContain("keystone_ui");
   });
+
+  it("lists a package in both groups once", () => {
+    const dir = tmpDir();
+    writeManifest(dir, {
+      name: "host",
+      dependencies: { keystone_ui: "*" },
+      devDependencies: { keystone_ui: "*" },
+    });
+    expect(directDependencies(dir)).toEqual(["keystone_ui"]);
+  });
 });
