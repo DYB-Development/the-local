@@ -32,6 +32,14 @@ describe("writeTrigger", () => {
     expect(occurrences).toBe(1);
   });
 
+  it("leaves CLAUDE.md byte-for-byte identical on rerun", () => {
+    const dir = tmpDir();
+    writeTrigger(dir, [keystone]);
+    const afterFirst = readFileSync(join(dir, "CLAUDE.md"), "utf8");
+    writeTrigger(dir, [keystone]);
+    expect(readFileSync(join(dir, "CLAUDE.md"), "utf8")).toBe(afterFirst);
+  });
+
   it("preserves existing CLAUDE.md content", () => {
     const dir = tmpDir();
     writeFileSync(join(dir, "CLAUDE.md"), "# My App\n\nHouse rules.\n");
