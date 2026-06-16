@@ -13,6 +13,7 @@ export interface DiscoveredProvider {
 interface PackageManifest {
   name?: string;
   dependencies?: Record<string, string>;
+  devDependencies?: Record<string, string>;
   "the-local"?: { prefix?: string; scope?: string | null; agentsDir?: string };
 }
 
@@ -23,7 +24,16 @@ function readManifest(packageJsonPath: string): PackageManifest | null {
 
 export function directDependencies(hostDir: string): string[] {
   const manifest = readManifest(join(hostDir, "package.json"));
-  return Object.keys(manifest?.dependencies ?? {});
+  // Scope mirrors the Ruby gem's Bundler direct deps (which include the
+  // :development group): runtime `dependencies` plus build-time
+  // `devDependencies`. peer/optional are deliberately excluded — they are not
+  // packages the host installs as its own direct tooling.
+  return [
+    ...new Set([
+      ...Object.keys(manifest?.dependencies ?? {}),
+      ...Object.keys(manifest?.devDependencies ?? {}),
+    ]),
+  ];
 }
 
 export function discoverProviders(hostDir: string): DiscoveredProvider[] {
