@@ -27,7 +27,8 @@ export function writeTrigger(
 ): void {
   const path = join(hostDir, filename);
   const existing = existsSync(path) ? readFileSync(path, "utf8") : "";
-  writeFileSync(path, `${mergeTrigger(existing, delegationRule(providers))}\n`);
+  const merged = mergeTrigger(existing, delegationRule(providers));
+  writeFileSync(path, `${merged.replace(/\s*$/, "")}\n`);
 }
 
 export interface InstallResult {
