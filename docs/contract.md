@@ -74,6 +74,15 @@ are filtered out. A provider counts as in-scope when it is a direct dependency,
 or when it is not an installed package at all (e.g. the host app itself
 declaring locals). This mirrors the Ruby `Scope` rule.
 
+"Direct dependency" means a package listed in the host `package.json`'s
+`dependencies` **or** `devDependencies` (deduped — a package in both counts
+once). `devDependencies` is included because a the-local provider is typically a
+build-time tool, matching the Ruby gem's Bundler scope (which includes the
+`:development` group). `peerDependencies` and `optionalDependencies` are
+**excluded**: a peer dependency is a contract for what the host expects to be
+present rather than tooling the host installs, and optional dependencies are not
+where a provider belongs.
+
 ## 4. Authoring a provider
 
 `the-local provider [dir]` turns a package into a provider (the analog of Ruby's
