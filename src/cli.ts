@@ -1,10 +1,18 @@
 #!/usr/bin/env node
-import { realpathSync } from "node:fs";
-import { pathToFileURL } from "node:url";
+import { readFileSync, realpathSync } from "node:fs";
+import { fileURLToPath, pathToFileURL } from "node:url";
+
 import { installLocals } from "./installer.js";
 import { buildProvider, scaffoldProvider } from "./provider.js";
 
 const COMMANDS = new Set(["install", "refresh"]);
+
+// Resolved relative to the module so it works from both `src` and built `dist`,
+// each of which sits one directory below the package root.
+function packageVersion(): string {
+  const manifestPath = fileURLToPath(new URL("../package.json", import.meta.url));
+  return (JSON.parse(readFileSync(manifestPath, "utf8")) as { version: string }).version;
+}
 
 export function run(argv: string[], hostDir: string): number {
   const command = argv[0] ?? "install";
@@ -27,6 +35,10 @@ export function run(argv: string[], hostDir: string): number {
 // the provider's config by dynamic import.
 export async function main(argv: string[], cwd: string): Promise<number> {
   const [command, target] = argv;
+  if (command === "--version" || command === "-v") {
+    process.stdout.write(`the-local ${packageVersion()}\n`);
+    return 0;
+  }
   if (command === "provider") {
     const { config, created } = scaffoldProvider(target ?? cwd);
     process.stdout.write(

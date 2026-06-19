@@ -1,9 +1,18 @@
 import { existsSync, readFileSync, realpathSync, symlinkSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { isEntrypoint, main, run } from "../src/cli.js";
 import { tmpDir, writeHost, writeProvider } from "./helpers.js";
+
+function captureStdout(): { output: () => string; restore: () => void } {
+  let buffer = "";
+  const spy = vi.spyOn(process.stdout, "write").mockImplementation((chunk) => {
+    buffer += String(chunk);
+    return true;
+  });
+  return { output: () => buffer, restore: () => spy.mockRestore() };
+}
 
 describe("isEntrypoint", () => {
   it("matches when the module is invoked through a symlinked bin", () => {
@@ -34,6 +43,16 @@ describe("cli run", () => {
     expect(run(["install"], dir)).toBe(0);
     expect(readFileSync(join(dir, ".claude/agents/keystone-scaffold.md"), "utf8")).toBe("AGENT");
     expect(existsSync(join(dir, "CLAUDE.md"))).toBe(true);
+  });
+});
+
+describe("--version", () => {
+  it("prints the package version", async () => {
+    const stdout = captureStdout();
+    await main(["--version"], tmpDir());
+    stdout.restore();
+    const version = JSON.parse(readFileSync(join(__dirname, "../package.json"), "utf8")).version;
+    expect(stdout.output()).toContain(version);
   });
 });
 
