@@ -3,6 +3,10 @@
 // byte-identical to the Ruby gem's `develop_process_rules.md` so the gem and the
 // npm package write the same standalone file and never clobber each other.
 
+export const PROCESS_BEGIN_MARKER = "<!-- the_local:process:begin -->";
+export const PROCESS_END_MARKER = "<!-- the_local:process:end -->";
+export const RULES_FILENAME = "develop_process_rules.md";
+
 export const processRules = `# Develop Process
 
 The standard process for writing code across all projects. Default to these rules
@@ -100,3 +104,14 @@ where touching more than the unit under test is expected and correct.
   external bug, a legal/security constraint) and machine-readable annotations the
   tooling requires (e.g. \`rubocop:disable\`). Prefer refactoring over a "why" comment
   whenever you can.`;
+
+export function processBlock(): string {
+  return [
+    PROCESS_BEGIN_MARKER,
+    "Read and follow this develop process for all work in this project. It is",
+    `also written verbatim to \`${RULES_FILENAME}\` — reference that file directly.`,
+    "",
+    processRules,
+    PROCESS_END_MARKER,
+  ].join("\n");
+}
