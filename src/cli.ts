@@ -30,8 +30,19 @@ function packageVersion(): string {
   return (JSON.parse(readFileSync(manifestPath, "utf8")) as { version: string }).version;
 }
 
-export function run(argv: string[], hostDir: string): number {
-  const command = argv[0] ?? "install";
+// Pulls an optional `--dir <path>` out of argv, returning the resolved host
+// directory (default `cwd`) alongside the remaining positional arguments.
+function parseHostDir(argv: string[], cwd: string): { hostDir: string; rest: string[] } {
+  const index = argv.indexOf("--dir");
+  if (index === -1) return { hostDir: cwd, rest: argv };
+  const hostDir = argv[index + 1];
+  if (hostDir === undefined) throw new Error("the-local: --dir requires a path argument");
+  return { hostDir, rest: [...argv.slice(0, index), ...argv.slice(index + 2)] };
+}
+
+export function run(argv: string[], cwd: string): number {
+  const { hostDir, rest } = parseHostDir(argv, cwd);
+  const command = rest[0] ?? "install";
   if (!COMMANDS.has(command)) {
     process.stderr.write(
       `the-local: unknown command "${command}" (expected install, refresh, provider, or build)\n`,

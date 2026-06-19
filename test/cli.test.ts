@@ -65,6 +65,22 @@ describe("--help", () => {
   });
 });
 
+describe("--dir", () => {
+  it("installs into the given host directory instead of cwd", async () => {
+    const host = tmpDir();
+    writeHost(host, ["keystone_ui"]);
+    writeProvider(join(host, "node_modules"), {
+      packageName: "keystone_ui",
+      prefix: "keystone",
+      agents: [{ name: "scaffold", content: "AGENT" }],
+    });
+
+    await main(["install", "--dir", host], tmpDir());
+
+    expect(existsSync(join(host, ".claude/agents/keystone-scaffold.md"))).toBe(true);
+  });
+});
+
 describe("provider command", () => {
   it("scaffolds the current package as a provider", async () => {
     const dir = tmpDir();
