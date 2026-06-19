@@ -12,4 +12,8 @@ describe("public entry", () => {
   it("re-exports the provider-authoring API", () => {
     expect(typeof api.scaffoldProvider).toBe("function");
   });
+
+  it("re-exports the develop-process writer", () => {
+    expect(typeof api.writeProcessDoc).toBe("function");
+  });
 });

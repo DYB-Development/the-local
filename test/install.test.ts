@@ -2,6 +2,7 @@ import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { installLocals } from "../src/installer.js";
+import { PROCESS_BEGIN_MARKER } from "../src/process.js";
 import { tmpDir, writeHost, writeProvider } from "./helpers.js";
 
 function host(deps: string[]): string {
@@ -56,6 +57,19 @@ describe("installLocals", () => {
     });
 
     expect(() => installLocals(dir)).toThrowError(/keystone_ui/);
+  });
+
+  it("propagates the develop-process block into CLAUDE.md", () => {
+    const dir = host(["keystone_ui"]);
+    writeProvider(nodeModules(dir), {
+      packageName: "keystone_ui",
+      prefix: "keystone",
+      agents: [{ name: "scaffold" }],
+    });
+
+    installLocals(dir);
+
+    expect(readFileSync(join(dir, "CLAUDE.md"), "utf8")).toContain(PROCESS_BEGIN_MARKER);
   });
 
   it("writes every allowed agent", () => {

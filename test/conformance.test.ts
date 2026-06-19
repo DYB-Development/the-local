@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { toMarkdown } from "../src/agent.js";
+import { processBlock, processRules } from "../src/process.js";
 import { delegationRule } from "../src/trigger.js";
 
 // Golden fixtures captured verbatim from the Ruby gem (the_local) so the TS port
@@ -45,6 +46,17 @@ describe("contract conformance", () => {
   it("renders the CLAUDE.md delegation block byte-for-byte as the Ruby gem does", () => {
     expect(delegationRule([{ prefix: "keystone", scope: "UI — pages, forms, tables" }])).toBe(
       DELEGATION_RULE,
+    );
+  });
+
+  it("renders the CLAUDE.md develop-process block byte-for-byte as the Ruby gem does", () => {
+    expect(processBlock()).toBe(
+      `<!-- the_local:process:begin -->
+Read and follow this develop process for all work in this project. It is
+also written verbatim to \`develop_process_rules.md\` — reference that file directly.
+
+${processRules}
+<!-- the_local:process:end -->`,
     );
   });
 });

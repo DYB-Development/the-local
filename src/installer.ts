@@ -1,6 +1,7 @@
 import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { basename, join } from "node:path";
 import { type DiscoveredProvider, discoverProviders } from "./discovery.js";
+import { writeProcessDoc } from "./process.js";
 import { type ProviderTrigger, delegationRule, mergeTrigger } from "./trigger.js";
 
 const AGENTS_DIR = ".claude/agents";
@@ -40,5 +41,6 @@ export function installLocals(hostDir: string): InstallResult {
   const providers = discoverProviders(hostDir);
   const agents = installAgents(hostDir, providers);
   writeTrigger(hostDir, providers);
+  writeProcessDoc(hostDir);
   return { providers, agents };
 }

@@ -67,6 +67,34 @@ See each agent's description for specifics.
 - Otherwise append the block after the host's existing content, separated by a
   blank line. The host's own content is never touched.
 
+## 2.1 `CLAUDE.md` develop-process block
+
+Alongside the delegation block, the host writes a second managed block carrying
+the canonical develop-process rules — read at the start of every session so the
+host agent follows one source of truth — and a standalone copy of those rules at
+`develop_process_rules.md`:
+
+```md
+<!-- the_local:process:begin -->
+Read and follow this develop process for all work in this project. It is
+also written verbatim to `develop_process_rules.md` — reference that file directly.
+
+# Develop Process
+
+...
+<!-- the_local:process:end -->
+```
+
+- The markers are exactly `<!-- the_local:process:begin -->` and
+  `<!-- the_local:process:end -->` in both languages. They are distinct from the
+  delegation markers (§2), so the two blocks coexist in one `CLAUDE.md` and
+  neither CLI clobbers the other.
+- The block embeds the rules verbatim and the standalone `develop_process_rules.md`
+  holds the same content, both byte-identical across the gem and the npm package
+  so the two never write conflicting copies.
+- The same merge rules as §2 apply: replace a marked block in place, be the whole
+  file when empty, otherwise append after the host's content.
+
 ## 3. Direct-dependency scope
 
 Only the host's **direct** dependencies contribute locals; transitive providers
