@@ -56,6 +56,15 @@ describe("--version", () => {
   });
 });
 
+describe("--help", () => {
+  it("lists the available commands", async () => {
+    const stdout = captureStdout();
+    await main(["--help"], tmpDir());
+    stdout.restore();
+    expect(stdout.output()).toContain("install");
+  });
+});
+
 describe("provider command", () => {
   it("scaffolds the current package as a provider", async () => {
     const dir = tmpDir();

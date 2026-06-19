@@ -7,6 +7,22 @@ import { buildProvider, scaffoldProvider } from "./provider.js";
 
 const COMMANDS = new Set(["install", "refresh"]);
 
+const HELP = `the-local — install companion agents declared by your dependencies
+
+Usage: the-local [command] [options]
+
+Commands:
+  install            Install agents into the host (default)
+  refresh            Re-install agents into the host
+  provider [dir]     Scaffold the current package as a provider
+  build [dir]        Re-render a provider's agents from its config
+
+Options:
+  --dir <path>       Target a host directory other than the current one
+  -h, --help         Show this help
+  -v, --version      Show the installed version
+`;
+
 // Resolved relative to the module so it works from both `src` and built `dist`,
 // each of which sits one directory below the package root.
 function packageVersion(): string {
@@ -37,6 +53,10 @@ export async function main(argv: string[], cwd: string): Promise<number> {
   const [command, target] = argv;
   if (command === "--version" || command === "-v") {
     process.stdout.write(`the-local ${packageVersion()}\n`);
+    return 0;
+  }
+  if (command === "--help" || command === "-h") {
+    process.stdout.write(HELP);
     return 0;
   }
   if (command === "provider") {
