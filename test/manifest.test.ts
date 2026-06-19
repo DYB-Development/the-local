@@ -11,4 +11,10 @@ describe("parseDeclaration", () => {
       /the-local: keystone_ui has a "the-local" declaration that is not an object/,
     );
   });
+
+  it("rejects a non-string prefix", () => {
+    expect(() => parseDeclaration({ prefix: 7 }, "keystone_ui")).toThrow(
+      /the-local: keystone_ui "the-local"\.prefix must be a non-empty string/,
+    );
+  });
 });
