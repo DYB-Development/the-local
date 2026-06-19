@@ -1,0 +1,40 @@
+import { describe, expect, it } from "vitest";
+import { parseDeclaration } from "../src/manifest.js";
+
+describe("parseDeclaration", () => {
+  it("returns the declared prefix", () => {
+    expect(parseDeclaration({ prefix: "keystone" }, "keystone_ui").prefix).toBe("keystone");
+  });
+
+  it("applies the documented defaults for an empty declaration", () => {
+    expect(parseDeclaration({}, "keystone_ui")).toEqual({
+      prefix: "keystone_ui",
+      scope: null,
+      agentsDir: "the-local/agents",
+    });
+  });
+
+  it("rejects a non-object declaration", () => {
+    expect(() => parseDeclaration("keystone", "keystone_ui")).toThrow(
+      /the-local: keystone_ui has a "the-local" declaration that is not an object/,
+    );
+  });
+
+  it("rejects a non-string prefix", () => {
+    expect(() => parseDeclaration({ prefix: 7 }, "keystone_ui")).toThrow(
+      /the-local: keystone_ui "the-local"\.prefix must be a non-empty string/,
+    );
+  });
+
+  it("rejects an empty agentsDir", () => {
+    expect(() => parseDeclaration({ agentsDir: "" }, "keystone_ui")).toThrow(
+      /the-local: keystone_ui "the-local"\.agentsDir must be a non-empty string/,
+    );
+  });
+
+  it("rejects a non-string, non-null scope", () => {
+    expect(() => parseDeclaration({ scope: 7 }, "keystone_ui")).toThrow(
+      /the-local: keystone_ui "the-local"\.scope must be a string or null/,
+    );
+  });
+});

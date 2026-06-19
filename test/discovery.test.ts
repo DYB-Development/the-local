@@ -1,4 +1,4 @@
-import { writeFileSync } from "node:fs";
+import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { directDependencies, discoverProviders } from "../src/discovery.js";
@@ -27,6 +27,17 @@ describe("directDependencies", () => {
 });
 
 describe("discoverProviders", () => {
+  it("rejects a provider whose the-local declaration is not an object", () => {
+    const dir = tmpDir();
+    writeManifest(dir, { name: "host", dependencies: { keystone_ui: "*" } });
+    const pkgDir = join(dir, "node_modules", "keystone_ui");
+    mkdirSync(pkgDir, { recursive: true });
+    writeManifest(pkgDir, { name: "keystone_ui", "the-local": "keystone" });
+    expect(() => discoverProviders(dir)).toThrow(
+      /the-local: keystone_ui has a "the-local" declaration that is not an object/,
+    );
+  });
+
   it("discovers a provider declared only in devDependencies", () => {
     const dir = tmpDir();
     writeManifest(dir, { name: "host", devDependencies: { keystone_ui: "*" } });

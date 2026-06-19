@@ -93,3 +93,21 @@ the-local — adds the `"the-local"` block and `the-local/agents` to the package
 `the-local build [dir]` re-renders the committed agents from it. The committed
 `.md` remain the contract a host reads (§1); the config is only the source they
 are built from.
+
+### 4.1 The `the-local` declaration block
+
+A provider declares itself to discovery (§2) with a `"the-local"` block in its
+`package.json`. The shape is locked: it must be an object, and every field is
+optional with a documented default.
+
+| Field       | Type            | Default                                         |
+| ----------- | --------------- | ----------------------------------------------- |
+| `prefix`    | non-empty string | the install name (the dependency's package key) |
+| `scope`     | string or `null` | `null` (renders a bare `<prefix>-* agents` line) |
+| `agentsDir` | non-empty string | `the-local/agents`                              |
+
+Discovery validates the block and fails with a clear, package-named error on a
+non-object declaration or a field of the wrong type (an empty string is treated
+as misconfiguration, not a default). This mirrors the Ruby gem: the declaration
+is the one place a provider customises its namespace, scope phrase, and committed
+agents directory.
