@@ -9,6 +9,8 @@ import {
   processRules,
   writeProcessDoc,
 } from "../src/process.js";
+import { BEGIN_MARKER } from "../src/trigger.js";
+import { writeTrigger } from "../src/installer.js";
 import { tmpDir } from "./helpers.js";
 
 describe("processRules", () => {
@@ -44,5 +46,12 @@ describe("writeProcessDoc", () => {
     writeProcessDoc(dir);
     const occurrences = readFileSync(join(dir, "CLAUDE.md"), "utf8").split(PROCESS_BEGIN_MARKER).length - 1;
     expect(occurrences).toBe(1);
+  });
+
+  it("preserves an existing delegation trigger block", () => {
+    const dir = tmpDir();
+    writeTrigger(dir, [{ prefix: "keystone", scope: "UI" }]);
+    writeProcessDoc(dir);
+    expect(readFileSync(join(dir, "CLAUDE.md"), "utf8")).toContain(BEGIN_MARKER);
   });
 });
