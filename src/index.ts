@@ -4,6 +4,14 @@ export { type ScopeInput, allowedProviders } from "./scope.js";
 export { type DiscoveredProvider, directDependencies, discoverProviders } from "./discovery.js";
 export { type InstallResult, installAgents, installLocals, writeTrigger } from "./installer.js";
 export { reference } from "./reference.js";
+export {
+  PROCESS_BEGIN_MARKER,
+  PROCESS_END_MARKER,
+  RULES_FILENAME,
+  processBlock,
+  processRules,
+  writeProcessDoc,
+} from "./process.js";
 export { companionAgents } from "./companion.js";
 export {
   type ProviderAgentSpec,
