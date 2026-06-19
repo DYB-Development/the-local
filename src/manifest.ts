@@ -12,6 +12,11 @@ export interface Declaration {
 // `Declaration`, applying the documented defaults. `fallbackPrefix` is the
 // install name used when the declaration omits an explicit prefix.
 export function parseDeclaration(raw: unknown, fallbackPrefix: string): Declaration {
+  if (typeof raw !== "object" || raw === null || Array.isArray(raw)) {
+    throw new Error(
+      `the-local: ${fallbackPrefix} has a "the-local" declaration that is not an object.`,
+    );
+  }
   const declaration = raw as { prefix?: string; scope?: string | null; agentsDir?: string };
   return {
     prefix: declaration.prefix ?? fallbackPrefix,

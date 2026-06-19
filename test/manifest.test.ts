@@ -5,4 +5,10 @@ describe("parseDeclaration", () => {
   it("returns the declared prefix", () => {
     expect(parseDeclaration({ prefix: "keystone" }, "keystone_ui").prefix).toBe("keystone");
   });
+
+  it("rejects a non-object declaration", () => {
+    expect(() => parseDeclaration("keystone", "keystone_ui")).toThrow(
+      /the-local: keystone_ui has a "the-local" declaration that is not an object/,
+    );
+  });
 });
