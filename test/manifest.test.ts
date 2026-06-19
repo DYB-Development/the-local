@@ -17,4 +17,10 @@ describe("parseDeclaration", () => {
       /the-local: keystone_ui "the-local"\.prefix must be a non-empty string/,
     );
   });
+
+  it("rejects an empty agentsDir", () => {
+    expect(() => parseDeclaration({ agentsDir: "" }, "keystone_ui")).toThrow(
+      /the-local: keystone_ui "the-local"\.agentsDir must be a non-empty string/,
+    );
+  });
 });

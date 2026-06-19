@@ -29,6 +29,7 @@ export function parseDeclaration(raw: unknown, fallbackPrefix: string): Declarat
   }
   const declaration = raw as { prefix?: string; scope?: string | null; agentsDir?: string };
   requireNonEmptyString(declaration.prefix, "prefix", fallbackPrefix);
+  requireNonEmptyString(declaration.agentsDir, "agentsDir", fallbackPrefix);
   return {
     prefix: declaration.prefix ?? fallbackPrefix,
     scope: declaration.scope ?? null,
