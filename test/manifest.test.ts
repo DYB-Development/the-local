@@ -23,4 +23,10 @@ describe("parseDeclaration", () => {
       /the-local: keystone_ui "the-local"\.agentsDir must be a non-empty string/,
     );
   });
+
+  it("rejects a non-string, non-null scope", () => {
+    expect(() => parseDeclaration({ scope: 7 }, "keystone_ui")).toThrow(
+      /the-local: keystone_ui "the-local"\.scope must be a string or null/,
+    );
+  });
 });

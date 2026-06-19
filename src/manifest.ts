@@ -30,6 +30,13 @@ export function parseDeclaration(raw: unknown, fallbackPrefix: string): Declarat
   const declaration = raw as { prefix?: string; scope?: string | null; agentsDir?: string };
   requireNonEmptyString(declaration.prefix, "prefix", fallbackPrefix);
   requireNonEmptyString(declaration.agentsDir, "agentsDir", fallbackPrefix);
+  if (
+    declaration.scope !== undefined &&
+    declaration.scope !== null &&
+    typeof declaration.scope !== "string"
+  ) {
+    throw new Error(`the-local: ${fallbackPrefix} "the-local".scope must be a string or null.`);
+  }
   return {
     prefix: declaration.prefix ?? fallbackPrefix,
     scope: declaration.scope ?? null,
