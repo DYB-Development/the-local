@@ -6,6 +6,14 @@ describe("parseDeclaration", () => {
     expect(parseDeclaration({ prefix: "keystone" }, "keystone_ui").prefix).toBe("keystone");
   });
 
+  it("applies the documented defaults for an empty declaration", () => {
+    expect(parseDeclaration({}, "keystone_ui")).toEqual({
+      prefix: "keystone_ui",
+      scope: null,
+      agentsDir: "the-local/agents",
+    });
+  });
+
   it("rejects a non-object declaration", () => {
     expect(() => parseDeclaration("keystone", "keystone_ui")).toThrow(
       /the-local: keystone_ui has a "the-local" declaration that is not an object/,
