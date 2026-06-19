@@ -1,3 +1,6 @@
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
+
 // The canonical develop-process rules the-local propagates into every host, so a
 // host agent reads and follows one source of truth. Embedded verbatim and kept
 // byte-identical to the Ruby gem's `develop_process_rules.md` so the gem and the
@@ -114,4 +117,24 @@ export function processBlock(): string {
     processRules,
     PROCESS_END_MARKER,
   ].join("\n");
+}
+
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function mergeProcessBlock(existing: string, block: string): string {
+  const section = new RegExp(
+    `${escapeRegExp(PROCESS_BEGIN_MARKER)}[\\s\\S]*?${escapeRegExp(PROCESS_END_MARKER)}`,
+  );
+  if (section.test(existing)) return existing.replace(section, block);
+  if (existing.trim() === "") return block;
+  return `${existing.replace(/\r?\n$/, "")}\n\n${block}`;
+}
+
+export function writeProcessDoc(destination: string, filename = "CLAUDE.md"): void {
+  writeFileSync(join(destination, RULES_FILENAME), `${processRules}\n`);
+  const path = join(destination, filename);
+  const existing = existsSync(path) ? readFileSync(path, "utf8") : "";
+  writeFileSync(path, `${mergeProcessBlock(existing, processBlock())}\n`);
 }
