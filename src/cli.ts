@@ -51,6 +51,11 @@ export function run(argv: string[], cwd: string): number {
   }
 
   const { providers, agents } = installLocals(hostDir);
+  for (const provider of providers) {
+    process.stdout.write(
+      `the-local:   ${provider.packageName} (${provider.prefix}): ${provider.agentFiles.length} agent(s)\n`,
+    );
+  }
   process.stdout.write(
     `the-local: installed ${agents.length} agent(s) from ${providers.length} provider(s).\n`,
   );

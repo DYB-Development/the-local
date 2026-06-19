@@ -65,6 +65,24 @@ describe("--help", () => {
   });
 });
 
+describe("install output", () => {
+  it("names each provider it installed agents from", () => {
+    const dir = tmpDir();
+    writeHost(dir, ["keystone_ui"]);
+    writeProvider(join(dir, "node_modules"), {
+      packageName: "keystone_ui",
+      prefix: "keystone",
+      agents: [{ name: "scaffold", content: "AGENT" }],
+    });
+
+    const stdout = captureStdout();
+    run(["install"], dir);
+    stdout.restore();
+
+    expect(stdout.output()).toContain("keystone_ui");
+  });
+});
+
 describe("--dir", () => {
   it("installs into the given host directory instead of cwd", async () => {
     const host = tmpDir();
