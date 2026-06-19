@@ -65,6 +65,20 @@ describe("--help", () => {
   });
 });
 
+describe("discovery errors", () => {
+  it("returns a non-zero code instead of throwing", () => {
+    const dir = tmpDir();
+    writeHost(dir, ["keystone_ui"]);
+    writeProvider(join(dir, "node_modules"), { packageName: "keystone_ui", omitAgentsDir: true });
+
+    const stderr = vi.spyOn(process.stderr, "write").mockImplementation(() => true);
+    const code = run(["install"], dir);
+    stderr.mockRestore();
+
+    expect(code).toBe(1);
+  });
+});
+
 describe("install output", () => {
   it("names each provider it installed agents from", () => {
     const dir = tmpDir();
