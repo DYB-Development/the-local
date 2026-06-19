@@ -48,4 +48,17 @@ describe("discoverProviders", () => {
     });
     expect(discoverProviders(dir).map((p) => p.packageName)).toEqual(["keystone_ui"]);
   });
+
+  it("resolves a direct dependency hoisted to an ancestor node_modules", () => {
+    const root = tmpDir();
+    const hostDir = join(root, "packages", "app");
+    mkdirSync(hostDir, { recursive: true });
+    writeManifest(hostDir, { name: "app", dependencies: { keystone_ui: "*" } });
+    writeProvider(join(root, "node_modules"), {
+      packageName: "keystone_ui",
+      prefix: "keystone",
+      agents: [{ name: "scaffold" }],
+    });
+    expect(discoverProviders(hostDir).map((p) => p.packageName)).toEqual(["keystone_ui"]);
+  });
 });

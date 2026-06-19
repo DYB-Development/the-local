@@ -1,5 +1,5 @@
 import { existsSync, readFileSync, readdirSync } from "node:fs";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 import { parseDeclaration } from "./manifest.js";
 
 export interface DiscoveredProvider {
@@ -35,12 +35,28 @@ export function directDependencies(hostDir: string): string[] {
   ];
 }
 
+// Walk up the ancestor `node_modules` chain to locate a dependency. pnpm/yarn/
+// npm workspaces hoist a host package's direct dependency up to the workspace
+// root's `node_modules`, so a direct dep is not always in the host's own
+// `node_modules`. This mirrors the effect Bundler's flat resolution gives the
+// Ruby gem for free.
+function resolvePackageDir(hostDir: string, dependency: string): string | null {
+  let current = hostDir;
+  for (;;) {
+    const candidate = join(current, "node_modules", dependency);
+    if (existsSync(join(candidate, "package.json"))) return candidate;
+    const parent = dirname(current);
+    if (parent === current) return null;
+    current = parent;
+  }
+}
+
 export function discoverProviders(hostDir: string): DiscoveredProvider[] {
-  const nodeModulesDir = join(hostDir, "node_modules");
   const providers: DiscoveredProvider[] = [];
 
   for (const dependency of directDependencies(hostDir)) {
-    const packageDir = join(nodeModulesDir, dependency);
+    const packageDir = resolvePackageDir(hostDir, dependency);
+    if (!packageDir) continue;
     const manifest = readManifest(join(packageDir, "package.json"));
     if (!manifest || manifest["the-local"] === undefined) continue;
 
