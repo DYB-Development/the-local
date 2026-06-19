@@ -31,4 +31,18 @@ describe("writeProcessDoc", () => {
     writeProcessDoc(dir);
     expect(readFileSync(join(dir, RULES_FILENAME), "utf8")).toBe(`${processRules}\n`);
   });
+
+  it("creates CLAUDE.md with the block when absent", () => {
+    const dir = tmpDir();
+    writeProcessDoc(dir);
+    expect(readFileSync(join(dir, "CLAUDE.md"), "utf8")).toBe(`${processBlock()}\n`);
+  });
+
+  it("is idempotent across reruns", () => {
+    const dir = tmpDir();
+    writeProcessDoc(dir);
+    writeProcessDoc(dir);
+    const occurrences = readFileSync(join(dir, "CLAUDE.md"), "utf8").split(PROCESS_BEGIN_MARKER).length - 1;
+    expect(occurrences).toBe(1);
+  });
 });
