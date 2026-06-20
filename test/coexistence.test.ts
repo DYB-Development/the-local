@@ -2,6 +2,7 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { writeTrigger } from "../src/installer.js";
+import { writeProcessDoc } from "../src/process.js";
 import { tmpDir } from "./helpers.js";
 
 // Cross-language seam (the_local#38 open question #4): a polyglot host's
@@ -17,6 +18,10 @@ const GEM_PROCESS_BLOCK = `<!-- the_local:process:begin -->
 GEM-AUTHORED PROCESS RULES — the npm package must not touch this.
 <!-- the_local:process:end -->`;
 
+const GEM_DELEGATION_BLOCK = `<!-- the_local:begin -->
+GEM-AUTHORED DELEGATION — rails_local owns Ruby work.
+<!-- the_local:end -->`;
+
 function seed(dir: string, contents: string): string {
   const path = join(dir, "CLAUDE.md");
   writeFileSync(path, contents);
@@ -29,5 +34,12 @@ describe("cross-language marker coexistence", () => {
     const path = seed(dir, `${GEM_PROCESS_BLOCK}\n`);
     writeTrigger(dir, [{ prefix: "keystone", scope: "UI" }]);
     expect(readFileSync(path, "utf8")).toContain(GEM_PROCESS_BLOCK);
+  });
+
+  it("writes the process block without touching a gem delegation block", () => {
+    const dir = tmpDir();
+    const path = seed(dir, `${GEM_DELEGATION_BLOCK}\n`);
+    writeProcessDoc(dir);
+    expect(readFileSync(path, "utf8")).toContain(GEM_DELEGATION_BLOCK);
   });
 });
