@@ -42,4 +42,13 @@ describe("cross-language marker coexistence", () => {
     writeProcessDoc(dir);
     expect(readFileSync(path, "utf8")).toContain(GEM_DELEGATION_BLOCK);
   });
+
+  it("preserves host prose between both managed regions when both writers run", () => {
+    const dir = tmpDir();
+    const prose = "## House rules\n\nHand-written notes the host owns.";
+    const path = seed(dir, `${GEM_DELEGATION_BLOCK}\n\n${prose}\n\n${GEM_PROCESS_BLOCK}\n`);
+    writeTrigger(dir, [{ prefix: "keystone", scope: "UI" }]);
+    writeProcessDoc(dir);
+    expect(readFileSync(path, "utf8")).toContain(prose);
+  });
 });
