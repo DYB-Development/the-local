@@ -2,6 +2,7 @@
   "name": "the-local",
   "version": "0.1.0",
   "type": "module",
+  "license": "MIT",
   "description": "Ship Claude Code locals from npm packages into a host TS/JS app — the TypeScript port of the the_local Ruby gem.",
   "engines": {
     "node": ">=20"
