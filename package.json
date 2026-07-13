@@ -1,6 +1,6 @@
 {
   "name": "the-local",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "license": "MIT",
   "description": "Ship Claude Code locals from npm packages into a host TS/JS app — the TypeScript port of the the_local Ruby gem.",
@@ -13,7 +13,11 @@
   },
   "homepage": "https://github.com/DYB-Development/the-local#readme",
   "bugs": "https://github.com/DYB-Development/the-local/issues",
-  "files": ["dist", "README.md", "the-local/agents"],
+  "files": [
+    "dist",
+    "README.md",
+    "the-local/agents"
+  ],
   "the-local": {
     "prefix": "the-local",
     "scope": "Claude Code locals — packages ship subagents that the-local installs into a host app",
