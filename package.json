@@ -3,7 +3,16 @@
   "version": "0.1.1",
   "type": "module",
   "license": "MIT",
+  "author": "DYB, L.L.C.",
   "description": "Ship Claude Code locals from npm packages into a host TS/JS app — the TypeScript port of the the_local Ruby gem.",
+  "keywords": [
+    "claude-code",
+    "claude",
+    "subagents",
+    "agents",
+    "cli",
+    "the-local"
+  ],
   "engines": {
     "node": ">=20"
   },
