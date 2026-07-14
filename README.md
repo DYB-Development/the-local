@@ -54,3 +54,13 @@ pnpm typecheck
 pnpm lint
 pnpm build       # emits dist/, including the the-local CLI
 ```
+
+## Contributing
+
+Pull requests are welcome. See [`CONTRIBUTING.md`](CONTRIBUTING.md) for the dev
+setup, commands, and workflow. Contributions are accepted under the project's
+MIT terms (inbound = outbound).
+
+## License
+
+[MIT](LICENSE) © DYB, L.L.C.
