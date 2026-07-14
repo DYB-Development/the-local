@@ -6,8 +6,9 @@ Ruby gem. A provider package commits its agent `.md` files; a host runs
 `the-local install` to copy the aggregated set from its direct dependencies into
 `.claude/agents/`, plus a delegation rule in `CLAUDE.md`.
 
-> Status: early. Core install pipeline + CLI are in place and tested. See the
-> open issues for remaining work (contract doc, npm publish, workspace support).
+Published on npm as [`the-local`](https://www.npmjs.com/package/the-local).
+Core install pipeline and CLI are in place and tested; see the open issues for
+planned work.
 
 ## The model
 
@@ -21,7 +22,7 @@ Ruby gem. A provider package commits its agent `.md` files; a host runs
 - **Cross-language contract.** The agent `.md` format and the `CLAUDE.md`
   `<!-- the_local:begin -->` / `<!-- the_local:end -->` markers are identical to
   the Ruby gem's, so a Ruby gem and a TS package install into the same host
-  without clobbering each other. See [`docs/contract.md`](docs/contract.md).
+  without clobbering each other. See [`docs/contract.md`](https://github.com/DYB-Development/the-local/blob/main/docs/contract.md).
 
 ## Use (host app)
 
