@@ -34,3 +34,14 @@ Then hide all of it. Your reader is wiring this package up from your file alone
 and will never open its source. No paths into the package's own `src` or `dist`,
 no private classes, no instruction to go read the package. Name only the commands
 the developer runs and the host files those commands create or edit.
+
+## The shape
+
+````
+---
+name: <prefix>-install
+description: Use to hook <package> into a project — <the declared setup tasks, named>.
+tools: Bash, Read, Edit
+scope: <copied verbatim from the manifest>
+---
+````

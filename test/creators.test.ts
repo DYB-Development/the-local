@@ -14,4 +14,8 @@ describe("install creator", () => {
   it("verifies against the declared sources", () => {
     expect(creatorPrompt("install")).toContain("Read the files under `sources`");
   });
+
+  it("fixes the tools line the install local gets", () => {
+    expect(creatorPrompt("install")).toContain("tools: Bash, Read, Edit");
+  });
 });
