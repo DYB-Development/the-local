@@ -3,7 +3,10 @@ import { fileURLToPath } from "node:url";
 
 import type { Facet } from "./interface.js";
 
+export function creatorPromptPath(facet: Facet): string {
+  return fileURLToPath(new URL(`../creators/${facet}.md`, import.meta.url));
+}
+
 export function creatorPrompt(facet: Facet): string {
-  const path = fileURLToPath(new URL(`../creators/${facet}.md`, import.meta.url));
-  return readFileSync(path, "utf8");
+  return readFileSync(creatorPromptPath(facet), "utf8");
 }

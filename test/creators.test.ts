@@ -1,6 +1,12 @@
 import { describe, expect, it } from "vitest";
 
-import { creatorPrompt } from "../src/creators.js";
+import { creatorPrompt, creatorPromptPath } from "../src/creators.js";
+
+describe("creator prompt location", () => {
+  it("stays outside the agents directory a host installs from", () => {
+    expect(creatorPromptPath("info")).not.toContain("the-local/agents");
+  });
+});
 
 describe("install creator", () => {
   it("writes the install local to the provider's agents directory", () => {
