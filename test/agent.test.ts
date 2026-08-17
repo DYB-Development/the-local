@@ -7,6 +7,7 @@ function build(overrides: Partial<Agent> = {}): Agent {
     name: "scaffold",
     description: "Use PROACTIVELY for UI work.",
     tools: "Read, Write, Edit",
+    scope: "UI — pages, forms, tables",
     body: "You build UI.",
     knowledge: "API docs.",
     ...overrides,
@@ -20,8 +21,12 @@ describe("agent", () => {
 
   it("opens the markdown with YAML frontmatter", () => {
     expect(toMarkdown(build())).toMatch(
-      /^---\nname: keystone-scaffold\ndescription: Use PROACTIVELY for UI work\.\ntools: Read, Write, Edit\n---\n/,
+      /^---\nname: keystone-scaffold\ndescription: Use PROACTIVELY for UI work\.\ntools: Read, Write, Edit\nscope: UI — pages, forms, tables\n---\n/,
     );
+  });
+
+  it("leaves the scope value empty when the agent has none", () => {
+    expect(toMarkdown(build({ scope: undefined }))).toContain("tools: Read, Write, Edit\nscope: \n");
   });
 
   it("includes the role body after the frontmatter", () => {

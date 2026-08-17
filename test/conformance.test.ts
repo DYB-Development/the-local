@@ -10,6 +10,7 @@ const AGENT_MARKDOWN = `---
 name: keystone-scaffold
 description: Use PROACTIVELY for UI work.
 tools: Read, Write, Edit
+scope: 
 ---
 
 You build UI.
