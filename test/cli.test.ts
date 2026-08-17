@@ -291,4 +291,16 @@ describe("author command", () => {
 
     expect(code).toBe(1);
   });
+
+  it("tells the author to declare the interface first", async () => {
+    let message = "";
+    const stderr = vi.spyOn(process.stderr, "write").mockImplementation((chunk) => {
+      message += String(chunk);
+      return true;
+    });
+    await main(["author"], tmpDir(), () => undefined);
+    stderr.mockRestore();
+
+    expect(message).toContain("declare this package's public interface");
+  });
 });
