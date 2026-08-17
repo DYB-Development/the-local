@@ -14,8 +14,7 @@ Usage: the-local [command] [options]
 Commands:
   install            Install agents into the host (default)
   refresh            Re-install agents into the host
-  provider [dir]     Scaffold the current package as a provider
-  build [dir]        Re-render a provider's agents from its config
+  provider [dir]     Wire the current package up as a provider
 
 Options:
   --dir <path>       Target a host directory other than the current one

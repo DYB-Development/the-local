@@ -63,6 +63,13 @@ describe("--help", () => {
     stdout.restore();
     expect(stdout.output()).toContain("install");
   });
+
+  it("no longer lists the build command", async () => {
+    const stdout = captureStdout();
+    await main(["--help"], tmpDir());
+    stdout.restore();
+    expect(stdout.output()).not.toContain("build");
+  });
 });
 
 describe("discovery errors", () => {
