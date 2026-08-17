@@ -1,8 +1,16 @@
+import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
 import { creatorPrompt, creatorPromptPath } from "../src/creators.js";
 
+const packageRoot = fileURLToPath(new URL("..", import.meta.url));
+
 describe("creator prompt location", () => {
+  it("resolves from the package root, so src and dist agree", () => {
+    expect(creatorPromptPath("install")).toBe(join(packageRoot, "creators", "install.md"));
+  });
+
   it("stays outside the agents directory a host installs from", () => {
     expect(creatorPromptPath("info")).not.toContain("the-local/agents");
   });
