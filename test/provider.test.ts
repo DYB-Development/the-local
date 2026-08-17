@@ -65,6 +65,20 @@ describe("scaffoldProvider", () => {
     expect(readPackage(dir).files).toContain("the-local/agents");
   });
 
+  it("preserves an authored scope on a second run", () => {
+    const dir = newPackage();
+    scaffoldProvider(dir);
+    const manifest = readPackage(dir);
+    (manifest["the-local"] as Record<string, unknown>).scope = "Event sourcing — aggregates";
+    writeFileSync(join(dir, "package.json"), JSON.stringify(manifest, null, 2));
+
+    scaffoldProvider(dir);
+
+    expect((readPackage(dir)["the-local"] as Record<string, unknown>).scope).toBe(
+      "Event sourcing — aggregates",
+    );
+  });
+
   it("renders no agents", () => {
     const dir = newPackage();
     scaffoldProvider(dir);
