@@ -16,4 +16,8 @@ describe("public entry", () => {
   it("re-exports the develop-process writer", () => {
     expect(typeof api.writeProcessDoc).toBe("function");
   });
+
+  it("re-exports the interface manifest reader", () => {
+    expect(typeof api.readInterface).toBe("function");
+  });
 });

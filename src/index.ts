@@ -14,6 +14,12 @@ export {
 } from "./process.js";
 export { companionAgents } from "./companion.js";
 export {
+  INTERFACE_FILE,
+  type Facet,
+  type InterfaceDeclaration,
+  readInterface,
+} from "./interface.js";
+export {
   type ProviderAgentSpec,
   type ProviderConfig,
   buildProvider,
