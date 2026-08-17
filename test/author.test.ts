@@ -29,4 +29,14 @@ describe("authoring a provider's locals", () => {
 
     expect(prompts).toEqual((["info", "install", "develop"] as const).map(creatorPrompt));
   });
+
+  it("runs every creator in the provider directory", () => {
+    const dir = tmpDir();
+    writeAuthorablePackage(dir);
+    const directories: string[] = [];
+
+    authorProvider(dir, (_prompt, runDir) => directories.push(runDir));
+
+    expect(directories).toEqual([dir, dir, dir]);
+  });
 });
