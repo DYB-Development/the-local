@@ -26,7 +26,7 @@ export function toMarkdown(agent: Agent): string {
     `name: ${qualifiedName(agent)}`,
     `description: ${agent.description}`,
     `tools: ${agent.tools}`,
-    `scope: ${agent.scope}`,
+    `scope: ${agent.scope ?? ""}`,
     "---",
     "",
     agent.body,

@@ -25,6 +25,10 @@ describe("agent", () => {
     );
   });
 
+  it("leaves the scope value empty when the agent has none", () => {
+    expect(toMarkdown(build({ scope: undefined }))).toContain("tools: Read, Write, Edit\nscope: \n");
+  });
+
   it("includes the role body after the frontmatter", () => {
     expect(toMarkdown(build({ body: "You build UI from helpers." }))).toContain(
       "You build UI from helpers.",
