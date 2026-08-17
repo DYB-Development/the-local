@@ -39,4 +39,19 @@ description: Use to learn what <package> offers — <its real subjects>.
 tools: Read
 scope: <copied verbatim from the manifest>
 ---
+
+<one or two sentences: this local explains and makes no changes>
+
+## What <package> is
+<one or two paragraphs: the problem it solves and when to reach for it>
+
+## Interface
+<what the other locals own, and which to route to — no entry points unless the
+manifest declares them under `info`>
+
+## How to use it
+<the decision a reader makes here: which of the other two locals they need>
+
+## Conventions
+<the vocabulary and naming needed to read this package's world correctly>
 ````

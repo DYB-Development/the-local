@@ -78,4 +78,8 @@ describe("info creator", () => {
   it("fixes the tools line the info local gets", () => {
     expect(creatorPrompt("info")).toContain("tools: Read\n");
   });
+
+  it("fixes the body sections the info local gets", () => {
+    expect(creatorPrompt("info")).toContain("## How to use it");
+  });
 });
