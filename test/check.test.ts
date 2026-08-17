@@ -65,3 +65,13 @@ describe("checkProvider format", () => {
     expect(checkProvider(dir)).toContain("keystone-info.md: missing section: ## Conventions");
   });
 });
+
+describe("checkProvider scope", () => {
+  it("reports a local whose scope differs from the manifest", () => {
+    const dir = writePackage({
+      declaration: { scope: "Keystone UI components" },
+      locals: { info: local({ scope: "something else" }) },
+    });
+    expect(checkProvider(dir)).toContain("keystone-info.md: scope does not match the manifest");
+  });
+});

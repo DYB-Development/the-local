@@ -1,6 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
+import { readInterface } from "./interface.js";
 import { prefixFromName } from "./provider.js";
 
 const FRONT_MATTER_KEYS = ["name", "description", "tools", "scope"];
@@ -43,10 +44,30 @@ function existingLocals(packageDir: string): Local[] {
     .map((local) => ({ filename: local.filename, markdown: readFileSync(local.path, "utf8") }));
 }
 
-export function checkProvider(packageDir: string): string[] {
-  return existingLocals(packageDir).flatMap((local) =>
+function frontMatterScope(markdown: string): string | null {
+  const block = /^---\n([\s\S]*?)\n---\n/.exec(markdown);
+  if (!block) return null;
+  const scope = /^scope:[ \t]*(.*)$/m.exec(block[1]);
+  return scope ? scope[1].trim() : null;
+}
+
+function formatProblems(locals: Local[]): string[] {
+  return locals.flatMap((local) =>
     [...missingKeys(local.markdown), ...missingSections(local.markdown)].map(
       (problem) => `${local.filename}: ${problem}`,
     ),
   );
+}
+
+function scopeProblems(locals: Local[], declaredScope: string | null): string[] {
+  if (declaredScope === null) return [];
+  return locals
+    .filter((local) => frontMatterScope(local.markdown) !== declaredScope)
+    .map((local) => `${local.filename}: scope does not match the manifest`);
+}
+
+export function checkProvider(packageDir: string): string[] {
+  const locals = existingLocals(packageDir);
+  const declared = readInterface(packageDir);
+  return [...formatProblems(locals), ...scopeProblems(locals, declared.scope)];
 }
