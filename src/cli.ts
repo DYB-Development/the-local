@@ -2,6 +2,7 @@
 import { readFileSync, realpathSync } from "node:fs";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
+import { checkProvider } from "./check.js";
 import { installLocals } from "./installer.js";
 import { scaffoldProvider } from "./provider.js";
 
@@ -15,6 +16,7 @@ Commands:
   install            Install agents into the host (default)
   refresh            Re-install agents into the host
   provider [dir]     Wire the current package up as a provider
+  check [dir]        Verify a provider's committed locals against its manifest
 
 Options:
   --dir <path>       Target a host directory other than the current one
@@ -80,6 +82,15 @@ export async function main(argv: string[], cwd: string): Promise<number> {
   if (command === "--help" || command === "-h") {
     process.stdout.write(HELP);
     return 0;
+  }
+  if (command === "check") {
+    const problems = checkProvider(target ?? cwd);
+    if (problems.length === 0) {
+      process.stdout.write("the-local: locals hold the format\n");
+      return 0;
+    }
+    process.stderr.write(`the-local: malformed local(s):\n- ${problems.join("\n- ")}\n`);
+    return 1;
   }
   if (command === "provider") {
     const { prefix } = scaffoldProvider(target ?? cwd);

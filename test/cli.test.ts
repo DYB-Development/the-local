@@ -1,4 +1,11 @@
-import { existsSync, readFileSync, realpathSync, symlinkSync, writeFileSync } from "node:fs";
+import {
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  realpathSync,
+  symlinkSync,
+  writeFileSync,
+} from "node:fs";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 import { describe, expect, it, vi } from "vitest";
@@ -76,6 +83,13 @@ describe("--help", () => {
     expect(stdout.output()).toContain("install");
   });
 
+  it("lists the check command", async () => {
+    const stdout = captureStdout();
+    await main(["--help"], tmpDir());
+    stdout.restore();
+    expect(stdout.output()).toContain("check");
+  });
+
   it("no longer lists the build command", async () => {
     const stdout = captureStdout();
     await main(["--help"], tmpDir());
@@ -140,6 +154,95 @@ describe("provider command", () => {
     await main(["provider"], dir);
     stdout.restore();
     expect(existsSync(join(dir, "the-local.config.js"))).toBe(false);
+  });
+});
+
+function writeCheckablePackage(dir: string): void {
+  writeFileSync(join(dir, "package.json"), JSON.stringify({ name: "keystone", version: "0.0.0" }));
+  mkdirSync(join(dir, "the-local", "agents"), { recursive: true });
+  writeFileSync(
+    join(dir, "the-local", "agents", "keystone-info.md"),
+    [
+      "---",
+      "name: keystone-info",
+      "description: what keystone owns",
+      "tools: Read",
+      "scope: Keystone UI components",
+      "---",
+      "",
+      "## What",
+      "## Interface",
+      "## How to use it",
+      "## Conventions",
+      "",
+    ].join("\n"),
+  );
+}
+
+describe("check command", () => {
+  it("returns zero when the provider's locals hold the format", async () => {
+    const dir = tmpDir();
+    writeCheckablePackage(dir);
+
+    const stdout = captureStdout();
+    const code = await main(["check"], dir);
+    stdout.restore();
+
+    expect(code).toBe(0);
+  });
+
+  it("prints a success line when the provider's locals hold the format", async () => {
+    const dir = tmpDir();
+    writeCheckablePackage(dir);
+
+    const stdout = captureStdout();
+    await main(["check"], dir);
+    stdout.restore();
+
+    expect(stdout.output()).toContain("the-local: locals hold the format");
+  });
+
+  it("returns a non-zero code when a local is malformed", async () => {
+    const dir = tmpDir();
+    writeCheckablePackage(dir);
+    writeFileSync(join(dir, "the-local", "agents", "keystone-info.md"), "## What\n");
+
+    const stderr = vi.spyOn(process.stderr, "write").mockImplementation(() => true);
+    const stdout = captureStdout();
+    const code = await main(["check"], dir);
+    stdout.restore();
+    stderr.mockRestore();
+
+    expect(code).toBe(1);
+  });
+
+  it("names each problem it found", async () => {
+    const dir = tmpDir();
+    writeCheckablePackage(dir);
+    writeFileSync(join(dir, "the-local", "agents", "keystone-info.md"), "## What\n");
+
+    let message = "";
+    const stderr = vi.spyOn(process.stderr, "write").mockImplementation((chunk) => {
+      message += String(chunk);
+      return true;
+    });
+    const stdout = captureStdout();
+    await main(["check"], dir);
+    stdout.restore();
+    stderr.mockRestore();
+
+    expect(message).toContain("keystone-info.md: missing key: name");
+  });
+
+  it("checks the given directory instead of cwd", async () => {
+    const packageDir = tmpDir();
+    writeCheckablePackage(packageDir);
+
+    const stdout = captureStdout();
+    const code = await main(["check", packageDir], tmpDir());
+    stdout.restore();
+
+    expect(code).toBe(0);
   });
 });
 
