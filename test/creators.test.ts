@@ -44,4 +44,8 @@ describe("develop creator", () => {
   it("verifies against the declared sources", () => {
     expect(creatorPrompt("develop")).toContain("Read the files under `sources`");
   });
+
+  it("fixes the tools line the develop local gets", () => {
+    expect(creatorPrompt("develop")).toContain("tools: Read, Write, Edit, Grep");
+  });
 });

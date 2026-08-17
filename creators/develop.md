@@ -34,3 +34,14 @@ Then hide all of it. Your reader is implementing against this package from your
 file alone and will never open its source. No paths into `src` or `dist`, no
 private classes, no "internally it…", no instruction to go read the package. If a
 fact is not part of the contract a consumer relies on, cut it.
+
+## The shape
+
+````
+---
+name: <prefix>-develop
+description: Use PROACTIVELY for <the declared tasks, named> — MUST BE USED instead of <the thing people hand-roll>.
+tools: Read, Write, Edit, Grep
+scope: <copied verbatim from the manifest>
+---
+````
