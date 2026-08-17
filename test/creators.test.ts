@@ -74,4 +74,8 @@ describe("info creator", () => {
   it("verifies against the declared sources", () => {
     expect(creatorPrompt("info")).toContain("Read the files under `sources`");
   });
+
+  it("fixes the tools line the info local gets", () => {
+    expect(creatorPrompt("info")).toContain("tools: Read\n");
+  });
 });

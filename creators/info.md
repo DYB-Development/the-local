@@ -29,3 +29,14 @@ vocabulary it uses. The README states intent and may be stale; the code wins.
 
 Then hide all of it. Your reader will never open the package's source. No paths
 into `src` or `dist`, no private classes, no instruction to go read the package.
+
+## The shape
+
+````
+---
+name: <prefix>-info
+description: Use to learn what <package> offers — <its real subjects>.
+tools: Read
+scope: <copied verbatim from the manifest>
+---
+````
