@@ -78,3 +78,11 @@ decision to put to the developer>
 ## Conventions
 <post-install checks, re-sync rules, and what is out of scope>
 ````
+
+## Before you finish
+
+- Every entry point under `install` appears in your Interface as its own bullet.
+- Nothing declared under `develop` or `info` appears anywhere in your file.
+- `the-local/agents` is in the `files` allowlist of `package.json`.
+- Re-read it with no access to the source. Could someone wire the package up
+  correctly from these steps alone?

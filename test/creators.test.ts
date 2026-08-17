@@ -26,4 +26,8 @@ describe("install creator", () => {
   it("cuts everything that is not a step", () => {
     expect(creatorPrompt("install")).toContain("Cut every sentence that is not a step");
   });
+
+  it("checks every declared entry point made it in", () => {
+    expect(creatorPrompt("install")).toContain("## Before you finish");
+  });
 });
