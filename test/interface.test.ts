@@ -21,4 +21,10 @@ describe("readInterface", () => {
     writeInterface(dir, JSON.stringify({ install: ["npx keystone init"] }));
     expect(readInterface(dir).entryPoints.install).toEqual(["npx keystone init"]);
   });
+
+  it("reads an undeclared facet as an empty list", () => {
+    const dir = tmpDir();
+    writeInterface(dir, JSON.stringify({ install: ["npx keystone init"] }));
+    expect(readInterface(dir).entryPoints.info).toEqual([]);
+  });
 });
