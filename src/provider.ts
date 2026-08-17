@@ -83,7 +83,5 @@ export function scaffoldProvider(packageDir: string): { prefix: string } {
 
   writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
 
-  renderProvider(config, packageDir);
-
   return { prefix: config.prefix };
 }

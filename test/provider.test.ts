@@ -65,9 +65,9 @@ describe("scaffoldProvider", () => {
     expect(readPackage(dir).files).toContain("the-local/agents");
   });
 
-  it("renders the starter agents to committed files", () => {
+  it("renders no agents", () => {
     const dir = newPackage();
     scaffoldProvider(dir);
-    expect(existsSync(join(dir, "the-local/agents/core-info.md"))).toBe(true);
+    expect(existsSync(join(dir, "the-local/agents/core-info.md"))).toBe(false);
   });
 });
