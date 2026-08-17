@@ -21,3 +21,11 @@ made in the manifest. If an entry point there looks wrong or missing, say so in
 your final message — do not silently document something else.
 
 Copy the manifest's `scope` value verbatim into your front matter.
+
+## Verify against the source, then hide it
+
+Read the files under `sources` to confirm what the package actually is and the
+vocabulary it uses. The README states intent and may be stale; the code wins.
+
+Then hide all of it. Your reader will never open the package's source. No paths
+into `src` or `dist`, no private classes, no instruction to go read the package.

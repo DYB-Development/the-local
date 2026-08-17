@@ -70,4 +70,8 @@ describe("info creator", () => {
   it("takes its assignment from the interface manifest", () => {
     expect(creatorPrompt("info")).toContain("Read `the-local/interface.json` first");
   });
+
+  it("verifies against the declared sources", () => {
+    expect(creatorPrompt("info")).toContain("Read the files under `sources`");
+  });
 });
