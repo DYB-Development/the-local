@@ -2,7 +2,7 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
-import { authorProvider } from "../src/author.js";
+import { authorProvider, claudeCommand } from "../src/author.js";
 import { creatorPrompt } from "../src/creators.js";
 import { tmpDir } from "./helpers.js";
 
@@ -38,5 +38,20 @@ describe("authoring a provider's locals", () => {
     authorProvider(dir, (_prompt, runDir) => directories.push(runDir));
 
     expect(directories).toEqual([dir, dir, dir]);
+  });
+});
+
+describe("the claude invocation", () => {
+  it("passes the prompt to a headless run that may read, grep, and write", () => {
+    expect(claudeCommand("AUTHOR")).toEqual([
+      "claude",
+      "-p",
+      "--allowedTools",
+      "Read,Grep,Write",
+      "--permission-mode",
+      "acceptEdits",
+      "--",
+      "AUTHOR",
+    ]);
   });
 });

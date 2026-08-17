@@ -6,6 +6,19 @@ import { FACETS, INTERFACE_FILE } from "./interface.js";
 
 export type CreatorRunner = (prompt: string, dir: string) => void;
 
+const CLAUDE_ARGS = [
+  "-p",
+  "--allowedTools",
+  "Read,Grep,Write",
+  "--permission-mode",
+  "acceptEdits",
+  "--",
+];
+
+export function claudeCommand(prompt: string): string[] {
+  return ["claude", ...CLAUDE_ARGS, prompt];
+}
+
 function requireDeclaredInterface(packageDir: string): void {
   if (existsSync(join(packageDir, INTERFACE_FILE))) return;
   throw new Error(
