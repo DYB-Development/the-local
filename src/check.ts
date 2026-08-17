@@ -59,8 +59,15 @@ function formatProblems(locals: Local[]): string[] {
   );
 }
 
+function disagreementProblems(locals: Local[]): string[] {
+  const scopes = new Set(
+    locals.map((local) => frontMatterScope(local.markdown)).filter((scope) => scope !== null),
+  );
+  return scopes.size > 1 ? ["the locals' scope lines disagree"] : [];
+}
+
 function scopeProblems(locals: Local[], declaredScope: string | null): string[] {
-  if (declaredScope === null) return [];
+  if (declaredScope === null) return disagreementProblems(locals);
   return locals
     .filter((local) => frontMatterScope(local.markdown) !== declaredScope)
     .map((local) => `${local.filename}: scope does not match the manifest`);

@@ -74,4 +74,11 @@ describe("checkProvider scope", () => {
     });
     expect(checkProvider(dir)).toContain("keystone-info.md: scope does not match the manifest");
   });
+
+  it("reports disagreeing scope lines when the manifest declares no scope", () => {
+    const dir = writePackage({
+      locals: { info: local({ scope: "one thing" }), install: local({ scope: "another thing" }) },
+    });
+    expect(checkProvider(dir)).toContain("the locals' scope lines disagree");
+  });
 });
