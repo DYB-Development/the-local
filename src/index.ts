@@ -3,7 +3,6 @@ export { BEGIN_MARKER, END_MARKER, type ProviderTrigger, delegationRule, mergeTr
 export { type ScopeInput, allowedProviders } from "./scope.js";
 export { type DiscoveredProvider, directDependencies, discoverProviders } from "./discovery.js";
 export { type InstallResult, installAgents, installLocals, writeTrigger } from "./installer.js";
-export { reference } from "./reference.js";
 export {
   PROCESS_BEGIN_MARKER,
   PROCESS_END_MARKER,
@@ -12,7 +11,6 @@ export {
   processRules,
   writeProcessDoc,
 } from "./process.js";
-export { companionAgents } from "./companion.js";
 export { creatorPrompt } from "./creators.js";
 export {
   INTERFACE_FILE,

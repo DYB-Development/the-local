@@ -1,12 +1,13 @@
 import { describe, expect, it } from "vitest";
 import * as api from "../src/index.js";
 
-// The package's public entry must re-export the companion so consumers (and the
-// build:agents generator's contract) can reach it without deep imports.
-
 describe("public entry", () => {
-  it("re-exports the three companion agents", () => {
-    expect(api.companionAgents).toHaveLength(3);
+  it("no longer re-exports the companion agents", () => {
+    expect("companionAgents" in api).toBe(false);
+  });
+
+  it("no longer re-exports the reference blob", () => {
+    expect("reference" in api).toBe(false);
   });
 
   it("re-exports the provider-authoring API", () => {
