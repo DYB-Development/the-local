@@ -44,7 +44,7 @@ export function run(argv: string[], cwd: string): number {
   const command = rest[0] ?? "install";
   if (!COMMANDS.has(command)) {
     process.stderr.write(
-      `the-local: unknown command "${command}" (expected install, refresh, provider, or build)\n`,
+      `the-local: unknown command "${command}" (expected install, refresh, or provider)\n`,
     );
     return 1;
   }

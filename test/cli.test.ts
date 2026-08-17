@@ -31,6 +31,18 @@ describe("cli run", () => {
     expect(run(["bogus"], tmpDir())).toBe(1);
   });
 
+  it("names only the surviving commands when one is unknown", () => {
+    let message = "";
+    const stderr = vi.spyOn(process.stderr, "write").mockImplementation((chunk) => {
+      message += String(chunk);
+      return true;
+    });
+    run(["bogus"], tmpDir());
+    stderr.mockRestore();
+
+    expect(message).toContain("expected install, refresh, or provider");
+  });
+
   it("installs a host's locals and returns zero", () => {
     const dir = tmpDir();
     writeHost(dir, ["keystone_ui"]);
