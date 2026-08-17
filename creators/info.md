@@ -30,6 +30,22 @@ vocabulary it uses. The README states intent and may be stale; the code wins.
 Then hide all of it. Your reader will never open the package's source. No paths
 into `src` or `dist`, no private classes, no instruction to go read the package.
 
+## What this local is for
+
+This is the catchall. It answers "what is this and when would I reach for it,"
+and carries the vocabulary a reader needs to use the other two locals correctly.
+It makes no changes and gives no steps.
+
+Keep it to a page. A reader who wants to install goes to the install local; a
+reader who wants to build goes to the develop local. Say so and stop.
+
+Cut every sentence that is not a fact the reader needs to orient. No history, no
+design rationale, no tour of subsystems.
+
+`description` is the routing surface — name the real subjects. "Any `<package>`
+work" matches only someone who already named the package, which is when no local
+was needed.
+
 ## The shape
 
 ````

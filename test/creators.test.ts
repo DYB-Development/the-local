@@ -82,4 +82,8 @@ describe("info creator", () => {
   it("fixes the body sections the info local gets", () => {
     expect(creatorPrompt("info")).toContain("## How to use it");
   });
+
+  it("cuts everything that is not a fact the reader needs", () => {
+    expect(creatorPrompt("info")).toContain("Cut every sentence that is not a fact");
+  });
 });
