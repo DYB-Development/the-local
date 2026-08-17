@@ -6,4 +6,8 @@ describe("install creator", () => {
   it("writes the install local to the provider's agents directory", () => {
     expect(creatorPrompt("install")).toContain("the-local/agents/<prefix>-install.md");
   });
+
+  it("takes its assignment from the interface manifest", () => {
+    expect(creatorPrompt("install")).toContain("Read `the-local/interface.json` first");
+  });
 });
