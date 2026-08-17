@@ -78,3 +78,10 @@ after, and any decision to put to the developer>
 ## Conventions
 <the invariants that must never be skipped, and what is out of scope>
 ````
+
+## Before you finish
+
+- Every entry point under `develop` appears in your Interface as its own bullet.
+- Nothing declared under `install` or `info` appears anywhere in your file.
+- Every import path you wrote resolves through the `exports` map.
+- Re-read it with no access to the source. Could you implement from this alone?
