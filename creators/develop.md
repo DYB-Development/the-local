@@ -44,4 +44,20 @@ description: Use PROACTIVELY for <the declared tasks, named> — MUST BE USED in
 tools: Read, Write, Edit, Grep
 scope: <copied verbatim from the manifest>
 ---
+
+<one or two sentences: what this local does and the ceremony it always follows>
+
+## What <package> is
+<one paragraph, plus when this local should fire>
+
+## Interface
+<one bullet per declared entry point, each leading with the entry point in
+backticks, then one line on what it does>
+
+## How to use it
+<numbered steps to implement, including where consuming code goes, what runs
+after, and any decision to put to the developer>
+
+## Conventions
+<the invariants that must never be skipped, and what is out of scope>
 ````

@@ -48,4 +48,8 @@ describe("develop creator", () => {
   it("fixes the tools line the develop local gets", () => {
     expect(creatorPrompt("develop")).toContain("tools: Read, Write, Edit, Grep");
   });
+
+  it("fixes the body sections the develop local gets", () => {
+    expect(creatorPrompt("develop")).toContain("## How to use it");
+  });
 });
