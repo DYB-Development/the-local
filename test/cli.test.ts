@@ -317,4 +317,16 @@ describe("author command", () => {
 
     expect(code).toBe(1);
   });
+
+  it("authors the given directory instead of cwd", async () => {
+    const packageDir = tmpDir();
+    writeAuthorablePackage(packageDir);
+    const directories: string[] = [];
+
+    const stdout = captureStdout();
+    await main(["author", packageDir], tmpDir(), (_prompt, dir) => directories.push(dir));
+    stdout.restore();
+
+    expect(directories).toEqual([packageDir, packageDir, packageDir]);
+  });
 });
