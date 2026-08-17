@@ -31,3 +31,9 @@ describe("install creator", () => {
     expect(creatorPrompt("install")).toContain("## Before you finish");
   });
 });
+
+describe("develop creator", () => {
+  it("writes the develop local to the provider's agents directory", () => {
+    expect(creatorPrompt("develop")).toContain("the-local/agents/<prefix>-develop.md");
+  });
+});
