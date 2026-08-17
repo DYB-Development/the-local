@@ -18,4 +18,8 @@ describe("install creator", () => {
   it("fixes the tools line the install local gets", () => {
     expect(creatorPrompt("install")).toContain("tools: Bash, Read, Edit");
   });
+
+  it("fixes the body sections the install local gets", () => {
+    expect(creatorPrompt("install")).toContain("## How to use it");
+  });
 });

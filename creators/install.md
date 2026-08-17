@@ -44,4 +44,20 @@ description: Use to hook <package> into a project — <the declared setup tasks,
 tools: Bash, Read, Edit
 scope: <copied verbatim from the manifest>
 ---
+
+<one or two sentences: this local follows these steps exactly and invents none>
+
+## What <package> is
+<one line: what it is, and when to hook it in>
+
+## Interface
+<one bullet per declared entry point, each leading with the command in backticks,
+then one line on what it does>
+
+## How to use it
+<numbered steps, in order: the command to run, the host files it touches, and any
+decision to put to the developer>
+
+## Conventions
+<post-install checks, re-sync rules, and what is out of scope>
 ````
