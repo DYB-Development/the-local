@@ -35,6 +35,23 @@ and will never open its source. No paths into the package's own `src` or `dist`,
 no private classes, no instruction to go read the package. Name only the commands
 the developer runs and the host files those commands create or edit.
 
+## What this local is for
+
+Hooking the systems together so they work: adding the package to a consumer and
+configuring it. Not how to build with it — that is the develop local's.
+
+Write it as ordered steps, top to bottom. Where setup takes a real decision — a
+choice between install paths, a value with no safe default, a companion package
+that may or may not be wanted — state the choice and tell the local to ask the
+developer rather than pick. Surfacing that question is part of the job.
+
+Cut every sentence that is not a step or a fact needed to complete one. No
+history, no rationale, no asides.
+
+`description` is the routing surface — name the real tasks. "Any `<package>`
+work" matches only someone who already named the package, which is when no local
+was needed.
+
 ## The shape
 
 ````

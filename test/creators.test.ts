@@ -22,4 +22,8 @@ describe("install creator", () => {
   it("fixes the body sections the install local gets", () => {
     expect(creatorPrompt("install")).toContain("## How to use it");
   });
+
+  it("cuts everything that is not a step", () => {
+    expect(creatorPrompt("install")).toContain("Cut every sentence that is not a step");
+  });
 });
