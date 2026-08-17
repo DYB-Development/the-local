@@ -20,11 +20,4 @@ export {
   type InterfaceDeclaration,
   readInterface,
 } from "./interface.js";
-export {
-  type ProviderAgentSpec,
-  type ProviderConfig,
-  prefixFromName,
-  renderProvider,
-  scaffoldProvider,
-  starterConfig,
-} from "./provider.js";
+export { prefixFromName, scaffoldProvider } from "./provider.js";
