@@ -133,11 +133,13 @@ describe("--dir", () => {
 });
 
 describe("provider command", () => {
-  it("scaffolds the current package as a provider", async () => {
+  it("wires the current package up as a provider without writing a config", async () => {
     const dir = tmpDir();
     writeFileSync(join(dir, "package.json"), JSON.stringify({ name: "@event-engine/store", version: "0.0.0" }));
+    const stdout = captureStdout();
     await main(["provider"], dir);
-    expect(existsSync(join(dir, "the-local.config.js"))).toBe(true);
+    stdout.restore();
+    expect(existsSync(join(dir, "the-local.config.js"))).toBe(false);
   });
 });
 

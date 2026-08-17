@@ -82,12 +82,8 @@ export async function main(argv: string[], cwd: string): Promise<number> {
     return 0;
   }
   if (command === "provider") {
-    const { config, created } = scaffoldProvider(target ?? cwd);
-    process.stdout.write(
-      created
-        ? `the-local: scaffolded provider "${config.prefix}" — edit the-local.config.js, then run the-local build.\n`
-        : `the-local: the-local.config.js already exists; run the-local build to re-render.\n`,
-    );
+    const { prefix } = scaffoldProvider(target ?? cwd);
+    process.stdout.write(`the-local: wired provider "${prefix}".\n`);
     return 0;
   }
   return run(argv, cwd);

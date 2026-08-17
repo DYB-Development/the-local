@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { type Agent, agentFilename, toMarkdown } from "./agent.js";
 
@@ -37,8 +37,6 @@ export function renderProvider(config: ProviderConfig, packageDir: string): stri
   });
 }
 
-const CONFIG_FILE = "the-local.config.js";
-
 // The starter config a freshly-scaffolded provider gets: the standard interface
 // of a read-only `info` explainer and a `develop` domain worker, with TODO
 // placeholders the author fills in. Mirrors the Ruby provider generator.
@@ -69,21 +67,12 @@ export function starterConfig(packageName: string): ProviderConfig {
 
 // Scaffold the provider side into a package: write a starter config (without
 // clobbering an authored one). Later cycles wire package.json and render.
-export function scaffoldProvider(packageDir: string): { config: ProviderConfig; created: boolean } {
+export function scaffoldProvider(packageDir: string): { prefix: string } {
   const manifestPath = join(packageDir, "package.json");
   const manifest = JSON.parse(readFileSync(manifestPath, "utf8")) as Record<string, unknown> & {
     name: string;
   };
   const config = starterConfig(manifest.name);
-
-  // Never clobber an authored config: if one already exists, the package is a
-  // provider already — leave its config, package.json, and rendered agents
-  // alone and let `the-local build` re-render from the author's config.
-  const configPath = join(packageDir, CONFIG_FILE);
-  const created = !existsSync(configPath);
-  if (!created) return { config, created };
-
-  writeFileSync(configPath, `export default ${JSON.stringify(config, null, 2)};\n`);
 
   const agentsDir = config.agentsDir ?? DEFAULT_AGENTS_DIR;
   manifest["the-local"] = { prefix: config.prefix, scope: config.scope, agentsDir };
@@ -96,5 +85,5 @@ export function scaffoldProvider(packageDir: string): { config: ProviderConfig; 
 
   renderProvider(config, packageDir);
 
-  return { config, created };
+  return { prefix: config.prefix };
 }

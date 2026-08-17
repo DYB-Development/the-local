@@ -44,10 +44,10 @@ describe("renderProvider", () => {
 });
 
 describe("scaffoldProvider", () => {
-  it("writes a starter the-local.config.js using the derived prefix", () => {
+  it("writes no the-local.config.js", () => {
     const dir = newPackage();
     scaffoldProvider(dir);
-    expect(readFileSync(join(dir, "the-local.config.js"), "utf8")).toContain('"prefix": "core"');
+    expect(existsSync(join(dir, "the-local.config.js"))).toBe(false);
   });
 
   it("declares the the-local provider block in package.json", () => {
@@ -67,17 +67,7 @@ describe("scaffoldProvider", () => {
 
   it("renders the starter agents to committed files", () => {
     const dir = newPackage();
-    const { config } = scaffoldProvider(dir);
-    const info = config.agents.find((a) => a.name === "info");
-    expect(readFileSync(join(dir, "the-local/agents/core-info.md"), "utf8")).toBe(
-      toMarkdown({ prefix: config.prefix, ...info! }),
-    );
-  });
-
-  it("does not render starter agents over an existing config", () => {
-    const dir = newPackage();
-    writeFileSync(join(dir, "the-local.config.js"), "export default { prefix: 'custom', agents: [] };\n");
     scaffoldProvider(dir);
-    expect(existsSync(join(dir, "the-local/agents/core-info.md"))).toBe(false);
+    expect(existsSync(join(dir, "the-local/agents/core-info.md"))).toBe(true);
   });
 });
