@@ -2,6 +2,7 @@
 import { readFileSync, realpathSync } from "node:fs";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
+import { checkProvider } from "./check.js";
 import { installLocals } from "./installer.js";
 import { scaffoldProvider } from "./provider.js";
 
@@ -80,6 +81,11 @@ export async function main(argv: string[], cwd: string): Promise<number> {
   if (command === "--help" || command === "-h") {
     process.stdout.write(HELP);
     return 0;
+  }
+  if (command === "check") {
+    const problems = checkProvider(target ?? cwd);
+    process.stdout.write("the-local: locals hold the format\n");
+    return problems.length === 0 ? 0 : 1;
   }
   if (command === "provider") {
     const { prefix } = scaffoldProvider(target ?? cwd);

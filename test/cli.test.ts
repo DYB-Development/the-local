@@ -1,4 +1,11 @@
-import { existsSync, readFileSync, realpathSync, symlinkSync, writeFileSync } from "node:fs";
+import {
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  realpathSync,
+  symlinkSync,
+  writeFileSync,
+} from "node:fs";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 import { describe, expect, it, vi } from "vitest";
@@ -140,6 +147,41 @@ describe("provider command", () => {
     await main(["provider"], dir);
     stdout.restore();
     expect(existsSync(join(dir, "the-local.config.js"))).toBe(false);
+  });
+});
+
+function writeCheckablePackage(dir: string): void {
+  writeFileSync(join(dir, "package.json"), JSON.stringify({ name: "keystone", version: "0.0.0" }));
+  mkdirSync(join(dir, "the-local", "agents"), { recursive: true });
+  writeFileSync(
+    join(dir, "the-local", "agents", "keystone-info.md"),
+    [
+      "---",
+      "name: keystone-info",
+      "description: what keystone owns",
+      "tools: Read",
+      "scope: Keystone UI components",
+      "---",
+      "",
+      "## What",
+      "## Interface",
+      "## How to use it",
+      "## Conventions",
+      "",
+    ].join("\n"),
+  );
+}
+
+describe("check command", () => {
+  it("returns zero when the provider's locals hold the format", async () => {
+    const dir = tmpDir();
+    writeCheckablePackage(dir);
+
+    const stdout = captureStdout();
+    const code = await main(["check"], dir);
+    stdout.restore();
+
+    expect(code).toBe(0);
   });
 });
 
