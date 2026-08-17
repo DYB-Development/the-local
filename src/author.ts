@@ -1,3 +1,4 @@
+import { execFileSync } from "node:child_process";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 
@@ -18,6 +19,16 @@ const CLAUDE_ARGS = [
 export function claudeCommand(prompt: string): string[] {
   return ["claude", ...CLAUDE_ARGS, prompt];
 }
+
+export const runClaude: CreatorRunner = (prompt, dir) => {
+  try {
+    execFileSync("claude", [...CLAUDE_ARGS, prompt], { cwd: dir, stdio: "inherit" });
+  } catch {
+    throw new Error(
+      `the-local: the creator run failed in ${dir} (is the \`claude\` CLI installed?)`,
+    );
+  }
+};
 
 function requireDeclaredInterface(packageDir: string): void {
   if (existsSync(join(packageDir, INTERFACE_FILE))) return;

@@ -2,7 +2,7 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
-import { authorProvider, claudeCommand } from "../src/author.js";
+import { authorProvider, claudeCommand, runClaude } from "../src/author.js";
 import { creatorPrompt } from "../src/creators.js";
 import { tmpDir } from "./helpers.js";
 
@@ -72,5 +72,13 @@ describe("the claude invocation", () => {
       "--",
       "AUTHOR",
     ]);
+  });
+});
+
+describe("a failed creator run", () => {
+  it("names the directory and the CLI the author needs", () => {
+    expect(() => runClaude("AUTHOR", join(tmpDir(), "missing"))).toThrow(
+      "is the `claude` CLI installed?",
+    );
   });
 });
