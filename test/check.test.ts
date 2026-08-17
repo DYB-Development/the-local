@@ -128,4 +128,12 @@ describe("checkProvider interface", () => {
     });
     expect(checkProvider(dir)).toEqual([]);
   });
+
+  it("skips a facet that has no committed file", () => {
+    const dir = writePackage({
+      declaration: { develop: ["npx keystone dev"] },
+      locals: { info: local() },
+    });
+    expect(checkProvider(dir)).toEqual([]);
+  });
 });
