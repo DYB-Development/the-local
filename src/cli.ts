@@ -3,7 +3,7 @@ import { readFileSync, realpathSync } from "node:fs";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
 import { installLocals } from "./installer.js";
-import { buildProvider, scaffoldProvider } from "./provider.js";
+import { scaffoldProvider } from "./provider.js";
 
 const COMMANDS = new Set(["install", "refresh"]);
 
@@ -14,8 +14,7 @@ Usage: the-local [command] [options]
 Commands:
   install            Install agents into the host (default)
   refresh            Re-install agents into the host
-  provider [dir]     Scaffold the current package as a provider
-  build [dir]        Re-render a provider's agents from its config
+  provider [dir]     Wire the current package up as a provider
 
 Options:
   --dir <path>       Target a host directory other than the current one
@@ -45,7 +44,7 @@ export function run(argv: string[], cwd: string): number {
   const command = rest[0] ?? "install";
   if (!COMMANDS.has(command)) {
     process.stderr.write(
-      `the-local: unknown command "${command}" (expected install, refresh, provider, or build)\n`,
+      `the-local: unknown command "${command}" (expected install, refresh, or provider)\n`,
     );
     return 1;
   }
@@ -83,17 +82,8 @@ export async function main(argv: string[], cwd: string): Promise<number> {
     return 0;
   }
   if (command === "provider") {
-    const { config, created } = scaffoldProvider(target ?? cwd);
-    process.stdout.write(
-      created
-        ? `the-local: scaffolded provider "${config.prefix}" — edit the-local.config.js, then run the-local build.\n`
-        : `the-local: the-local.config.js already exists; run the-local build to re-render.\n`,
-    );
-    return 0;
-  }
-  if (command === "build") {
-    const written = await buildProvider(target ?? cwd);
-    process.stdout.write(`the-local: rendered ${written.length} agent(s).\n`);
+    const { prefix } = scaffoldProvider(target ?? cwd);
+    process.stdout.write(`the-local: wired provider "${prefix}".\n`);
     return 0;
   }
   return run(argv, cwd);

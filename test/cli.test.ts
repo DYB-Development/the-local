@@ -31,6 +31,18 @@ describe("cli run", () => {
     expect(run(["bogus"], tmpDir())).toBe(1);
   });
 
+  it("names only the surviving commands when one is unknown", () => {
+    let message = "";
+    const stderr = vi.spyOn(process.stderr, "write").mockImplementation((chunk) => {
+      message += String(chunk);
+      return true;
+    });
+    run(["bogus"], tmpDir());
+    stderr.mockRestore();
+
+    expect(message).toContain("expected install, refresh, or provider");
+  });
+
   it("installs a host's locals and returns zero", () => {
     const dir = tmpDir();
     writeHost(dir, ["keystone_ui"]);
@@ -62,6 +74,13 @@ describe("--help", () => {
     await main(["--help"], tmpDir());
     stdout.restore();
     expect(stdout.output()).toContain("install");
+  });
+
+  it("no longer lists the build command", async () => {
+    const stdout = captureStdout();
+    await main(["--help"], tmpDir());
+    stdout.restore();
+    expect(stdout.output()).not.toContain("build");
   });
 });
 
@@ -114,26 +133,22 @@ describe("--dir", () => {
 });
 
 describe("provider command", () => {
-  it("scaffolds the current package as a provider", async () => {
+  it("wires the current package up as a provider without writing a config", async () => {
     const dir = tmpDir();
     writeFileSync(join(dir, "package.json"), JSON.stringify({ name: "@event-engine/store", version: "0.0.0" }));
+    const stdout = captureStdout();
     await main(["provider"], dir);
-    expect(existsSync(join(dir, "the-local.config.js"))).toBe(true);
+    stdout.restore();
+    expect(existsSync(join(dir, "the-local.config.js"))).toBe(false);
   });
 });
 
 describe("build command", () => {
-  it("re-renders a provider's agents from its config", async () => {
-    const dir = tmpDir();
-    writeFileSync(join(dir, "package.json"), JSON.stringify({ name: "@event-engine/store", version: "0.0.0" }));
-    const agent = { name: "info", description: "D", tools: "Read", body: "B", knowledge: "K" };
-    writeFileSync(
-      join(dir, "the-local.config.js"),
-      `export default ${JSON.stringify({ prefix: "store", agents: [agent] })};\n`,
-    );
+  it("is rejected as an unknown command", async () => {
+    const stderr = vi.spyOn(process.stderr, "write").mockImplementation(() => true);
+    const code = await main(["build"], tmpDir());
+    stderr.mockRestore();
 
-    await main(["build"], dir);
-
-    expect(existsSync(join(dir, "the-local/agents/store-info.md"))).toBe(true);
+    expect(code).toBe(1);
   });
 });

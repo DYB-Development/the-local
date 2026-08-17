@@ -1,8 +1,7 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { toMarkdown } from "../src/agent.js";
-import { buildProvider, prefixFromName, renderProvider, scaffoldProvider } from "../src/provider.js";
+import { prefixFromName, scaffoldProvider } from "../src/provider.js";
 import { tmpDir } from "./helpers.js";
 
 function newPackage(name = "@event-engine/core"): string {
@@ -21,33 +20,11 @@ describe("prefixFromName", () => {
   });
 });
 
-// renderProvider turns a provider's plain-data config into the committed `.md`
-// files a host installs — the same render the-local uses for its own companion,
-// generalised to any package.
-
-describe("renderProvider", () => {
-  it("renders each config agent to a committed file under the-local/agents", () => {
-    const dir = tmpDir();
-    const config = {
-      prefix: "core",
-      agents: [
-        { name: "info", description: "D", tools: "Read", body: "B", knowledge: "K" },
-      ],
-    };
-
-    renderProvider(config, dir);
-
-    expect(readFileSync(join(dir, "the-local/agents/core-info.md"), "utf8")).toBe(
-      toMarkdown({ prefix: "core", name: "info", description: "D", tools: "Read", body: "B", knowledge: "K" }),
-    );
-  });
-});
-
 describe("scaffoldProvider", () => {
-  it("writes a starter the-local.config.js using the derived prefix", () => {
+  it("writes no the-local.config.js", () => {
     const dir = newPackage();
     scaffoldProvider(dir);
-    expect(readFileSync(join(dir, "the-local.config.js"), "utf8")).toContain('"prefix": "core"');
+    expect(existsSync(join(dir, "the-local.config.js"))).toBe(false);
   });
 
   it("declares the the-local provider block in package.json", () => {
@@ -65,36 +42,23 @@ describe("scaffoldProvider", () => {
     expect(readPackage(dir).files).toContain("the-local/agents");
   });
 
-  it("renders the starter agents to committed files", () => {
+  it("preserves an authored scope on a second run", () => {
     const dir = newPackage();
-    const { config } = scaffoldProvider(dir);
-    const info = config.agents.find((a) => a.name === "info");
-    expect(readFileSync(join(dir, "the-local/agents/core-info.md"), "utf8")).toBe(
-      toMarkdown({ prefix: config.prefix, ...info! }),
+    scaffoldProvider(dir);
+    const manifest = readPackage(dir);
+    (manifest["the-local"] as Record<string, unknown>).scope = "Event sourcing — aggregates";
+    writeFileSync(join(dir, "package.json"), JSON.stringify(manifest, null, 2));
+
+    scaffoldProvider(dir);
+
+    expect((readPackage(dir)["the-local"] as Record<string, unknown>).scope).toBe(
+      "Event sourcing — aggregates",
     );
   });
 
-  it("does not render starter agents over an existing config", () => {
+  it("renders no agents", () => {
     const dir = newPackage();
-    writeFileSync(join(dir, "the-local.config.js"), "export default { prefix: 'custom', agents: [] };\n");
     scaffoldProvider(dir);
     expect(existsSync(join(dir, "the-local/agents/core-info.md"))).toBe(false);
-  });
-});
-
-describe("buildProvider", () => {
-  it("re-renders committed agents from the the-local.config.js", async () => {
-    const dir = newPackage();
-    const agent = { name: "info", description: "D", tools: "Read", body: "B", knowledge: "K" };
-    writeFileSync(
-      join(dir, "the-local.config.js"),
-      `export default ${JSON.stringify({ prefix: "store", agents: [agent] })};\n`,
-    );
-
-    await buildProvider(dir);
-
-    expect(readFileSync(join(dir, "the-local/agents/store-info.md"), "utf8")).toBe(
-      toMarkdown({ prefix: "store", ...agent }),
-    );
   });
 });
