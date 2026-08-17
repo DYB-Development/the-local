@@ -13,6 +13,7 @@ export {
   writeProcessDoc,
 } from "./process.js";
 export { companionAgents } from "./companion.js";
+export { creatorPrompt } from "./creators.js";
 export {
   INTERFACE_FILE,
   type Facet,
