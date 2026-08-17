@@ -27,4 +27,10 @@ describe("readInterface", () => {
     writeInterface(dir, JSON.stringify({ install: ["npx keystone init"] }));
     expect(readInterface(dir).entryPoints.info).toEqual([]);
   });
+
+  it("reads the declared sources", () => {
+    const dir = tmpDir();
+    writeInterface(dir, JSON.stringify({ sources: ["src/cli.ts"] }));
+    expect(readInterface(dir).sources).toEqual(["src/cli.ts"]);
+  });
 });

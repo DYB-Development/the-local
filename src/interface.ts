@@ -10,9 +10,13 @@ export type Facet = (typeof FACETS)[number];
 export interface InterfaceDeclaration {
   scope: string | null;
   entryPoints: Record<Facet, string[]>;
+  sources: string[];
 }
 
-type RawDeclaration = Partial<Record<Facet, string[]>> & { scope?: string | null };
+type RawDeclaration = Partial<Record<Facet, string[]>> & {
+  scope?: string | null;
+  sources?: string[];
+};
 
 function entryPoints(declaration: RawDeclaration): Record<Facet, string[]> {
   return Object.fromEntries(
@@ -24,5 +28,9 @@ export function readInterface(packageDir: string): InterfaceDeclaration {
   const declaration = JSON.parse(
     readFileSync(join(packageDir, INTERFACE_FILE), "utf8"),
   ) as RawDeclaration;
-  return { scope: declaration.scope ?? null, entryPoints: entryPoints(declaration) };
+  return {
+    scope: declaration.scope ?? null,
+    entryPoints: entryPoints(declaration),
+    sources: declaration.sources ?? [],
+  };
 }
