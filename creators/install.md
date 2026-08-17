@@ -20,3 +20,17 @@ made in the manifest. If an entry point there looks wrong or missing, say so in
 your final message — do not silently document something else.
 
 Copy the manifest's `scope` value verbatim into your front matter.
+
+## Verify against the source, then hide it
+
+Read the files under `sources` — the setup entry points, the config templates,
+the scripts they add — so every command and every file it writes is exact. A
+README's install section states intent and may be stale; the code wins.
+
+Check the `files` allowlist in `package.json` too. A local the package does not
+ship is a local no consumer ever sees, so `the-local/agents` has to be in there.
+
+Then hide all of it. Your reader is wiring this package up from your file alone
+and will never open its source. No paths into the package's own `src` or `dist`,
+no private classes, no instruction to go read the package. Name only the commands
+the developer runs and the host files those commands create or edit.

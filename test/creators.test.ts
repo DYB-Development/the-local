@@ -10,4 +10,8 @@ describe("install creator", () => {
   it("takes its assignment from the interface manifest", () => {
     expect(creatorPrompt("install")).toContain("Read `the-local/interface.json` first");
   });
+
+  it("verifies against the declared sources", () => {
+    expect(creatorPrompt("install")).toContain("Read the files under `sources`");
+  });
 });
