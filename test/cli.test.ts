@@ -226,6 +226,17 @@ describe("check command", () => {
 
     expect(message).toContain("keystone-info.md: missing key: name");
   });
+
+  it("checks the given directory instead of cwd", async () => {
+    const packageDir = tmpDir();
+    writeCheckablePackage(packageDir);
+
+    const stdout = captureStdout();
+    const code = await main(["check", packageDir], tmpDir());
+    stdout.restore();
+
+    expect(code).toBe(0);
+  });
 });
 
 describe("build command", () => {
