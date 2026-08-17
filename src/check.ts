@@ -101,8 +101,26 @@ function undocumented(local: Local, declared: InterfaceDeclaration): string[] {
     .map((entryPoint) => `${local.filename}: undocumented entry point: ${entryPoint}`);
 }
 
+function declaringFacet(span: string, declared: InterfaceDeclaration): Facet | undefined {
+  return FACETS.find((facet) =>
+    declared.entryPoints[facet].some((entryPoint) => span.includes(entryPoint)),
+  );
+}
+
+function misdocumented(local: Local, declared: InterfaceDeclaration): string[] {
+  return documented(local)
+    .filter((span) => declaringFacet(span, declared) !== local.facet)
+    .map(
+      (span) =>
+        `${local.filename}: entry point declared for ${declaringFacet(span, declared)}: ${span}`,
+    );
+}
+
 function interfaceProblems(locals: Local[], declared: InterfaceDeclaration): string[] {
-  return locals.flatMap((local) => undocumented(local, declared));
+  return locals.flatMap((local) => [
+    ...undocumented(local, declared),
+    ...misdocumented(local, declared),
+  ]);
 }
 
 export function checkProvider(packageDir: string): string[] {
