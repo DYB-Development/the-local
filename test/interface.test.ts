@@ -41,4 +41,12 @@ describe("readInterface", () => {
       sources: [],
     });
   });
+
+  it("rejects a manifest that is not valid JSON", () => {
+    const dir = tmpDir();
+    writeInterface(dir, "scope: not json");
+    expect(() => readInterface(dir)).toThrow(
+      /the-local: the-local\/interface\.json is not valid JSON/,
+    );
+  });
 });
