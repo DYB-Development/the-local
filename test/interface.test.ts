@@ -15,4 +15,10 @@ describe("readInterface", () => {
     writeInterface(dir, JSON.stringify({ scope: "Keystone UI components" }));
     expect(readInterface(dir).scope).toBe("Keystone UI components");
   });
+
+  it("reads the entry points declared for a facet", () => {
+    const dir = tmpDir();
+    writeInterface(dir, JSON.stringify({ install: ["npx keystone init"] }));
+    expect(readInterface(dir).entryPoints.install).toEqual(["npx keystone init"]);
+  });
 });
