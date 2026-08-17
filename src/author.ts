@@ -1,7 +1,8 @@
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 
-import { INTERFACE_FILE } from "./interface.js";
+import { creatorPrompt } from "./creators.js";
+import { FACETS, INTERFACE_FILE } from "./interface.js";
 
 export type CreatorRunner = (prompt: string, dir: string) => void;
 
@@ -14,5 +15,5 @@ function requireDeclaredInterface(packageDir: string): void {
 
 export function authorProvider(packageDir: string, runner: CreatorRunner): void {
   requireDeclaredInterface(packageDir);
-  runner("", packageDir);
+  for (const facet of FACETS) runner(creatorPrompt(facet), packageDir);
 }
