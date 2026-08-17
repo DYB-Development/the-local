@@ -107,13 +107,15 @@ function declaringFacet(span: string, declared: InterfaceDeclaration): Facet | u
   );
 }
 
+function misplacement(span: string, owner: Facet | undefined): string {
+  return owner ? `entry point declared for ${owner}: ${span}` : `undeclared entry point: ${span}`;
+}
+
 function misdocumented(local: Local, declared: InterfaceDeclaration): string[] {
   return documented(local)
-    .filter((span) => declaringFacet(span, declared) !== local.facet)
-    .map(
-      (span) =>
-        `${local.filename}: entry point declared for ${declaringFacet(span, declared)}: ${span}`,
-    );
+    .map((span) => ({ span, owner: declaringFacet(span, declared) }))
+    .filter(({ owner }) => owner !== local.facet)
+    .map(({ span, owner }) => `${local.filename}: ${misplacement(span, owner)}`);
 }
 
 function interfaceProblems(locals: Local[], declared: InterfaceDeclaration): string[] {

@@ -110,4 +110,14 @@ describe("checkProvider interface", () => {
       "keystone-info.md: entry point declared for develop: npx keystone init",
     );
   });
+
+  it("reports a documented entry point that is declared nowhere", () => {
+    const dir = writePackage({
+      declaration: { develop: ["npx keystone dev"] },
+      locals: { info: local({ entryPoints: ["npx keystone stray"] }) },
+    });
+    expect(checkProvider(dir)).toContain(
+      "keystone-info.md: undeclared entry point: npx keystone stray",
+    );
+  });
 });
