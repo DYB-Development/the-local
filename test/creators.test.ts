@@ -66,4 +66,8 @@ describe("info creator", () => {
   it("writes the info local to the provider's agents directory", () => {
     expect(creatorPrompt("info")).toContain("the-local/agents/<prefix>-info.md");
   });
+
+  it("takes its assignment from the interface manifest", () => {
+    expect(creatorPrompt("info")).toContain("Read `the-local/interface.json` first");
+  });
 });
