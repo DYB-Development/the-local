@@ -272,4 +272,15 @@ describe("author command", () => {
 
     expect(code).toBe(0);
   });
+
+  it("tells the author to review the locals and check them", async () => {
+    const dir = tmpDir();
+    writeAuthorablePackage(dir);
+
+    const stdout = captureStdout();
+    await main(["author"], dir, () => undefined);
+    stdout.restore();
+
+    expect(stdout.output()).toContain("review the-local/agents/ and run `the-local check`");
+  });
 });

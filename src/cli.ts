@@ -99,6 +99,9 @@ export async function main(
   }
   if (command === "author") {
     authorProvider(target ?? cwd, runner);
+    process.stdout.write(
+      "the-local: authored locals; review the-local/agents/ and run `the-local check`\n",
+    );
     return 0;
   }
   if (command === "provider") {
