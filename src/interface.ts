@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
 export const INTERFACE_FILE = join("the-local", "interface.json");
@@ -25,9 +25,10 @@ function entryPoints(declaration: RawDeclaration): Record<Facet, string[]> {
 }
 
 export function readInterface(packageDir: string): InterfaceDeclaration {
-  const declaration = JSON.parse(
-    readFileSync(join(packageDir, INTERFACE_FILE), "utf8"),
-  ) as RawDeclaration;
+  const path = join(packageDir, INTERFACE_FILE);
+  const declaration: RawDeclaration = existsSync(path)
+    ? (JSON.parse(readFileSync(path, "utf8")) as RawDeclaration)
+    : {};
   return {
     scope: declaration.scope ?? null,
     entryPoints: entryPoints(declaration),

@@ -33,4 +33,12 @@ describe("readInterface", () => {
     writeInterface(dir, JSON.stringify({ sources: ["src/cli.ts"] }));
     expect(readInterface(dir).sources).toEqual(["src/cli.ts"]);
   });
+
+  it("reads a missing manifest as an empty declaration", () => {
+    expect(readInterface(tmpDir())).toEqual({
+      scope: null,
+      entryPoints: { info: [], install: [], develop: [] },
+      sources: [],
+    });
+  });
 });
