@@ -11,6 +11,21 @@ function writeAuthorablePackage(dir: string): void {
   writeFileSync(join(dir, "the-local", "interface.json"), JSON.stringify({ sources: [] }));
 }
 
+function runsBeforeFailure(): number {
+  const dir = tmpDir();
+  writeAuthorablePackage(dir);
+  let runs = 0;
+  try {
+    authorProvider(dir, () => {
+      runs += 1;
+      throw new Error("the creator run failed");
+    });
+  } catch {
+    return runs;
+  }
+  return runs;
+}
+
 describe("authoring without a declared interface", () => {
   it("refuses to run", () => {
     expect(() => authorProvider(tmpDir(), () => undefined)).toThrow(
@@ -38,6 +53,10 @@ describe("authoring a provider's locals", () => {
     authorProvider(dir, (_prompt, runDir) => directories.push(runDir));
 
     expect(directories).toEqual([dir, dir, dir]);
+  });
+
+  it("stops at the first failed run", () => {
+    expect(runsBeforeFailure()).toBe(1);
   });
 });
 
