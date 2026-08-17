@@ -183,6 +183,17 @@ describe("check command", () => {
 
     expect(code).toBe(0);
   });
+
+  it("prints a success line when the provider's locals hold the format", async () => {
+    const dir = tmpDir();
+    writeCheckablePackage(dir);
+
+    const stdout = captureStdout();
+    await main(["check"], dir);
+    stdout.restore();
+
+    expect(stdout.output()).toContain("the-local: locals hold the format");
+  });
 });
 
 describe("build command", () => {
