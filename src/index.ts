@@ -23,7 +23,6 @@ export {
 export {
   type ProviderAgentSpec,
   type ProviderConfig,
-  buildProvider,
   prefixFromName,
   renderProvider,
   scaffoldProvider,
