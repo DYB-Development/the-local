@@ -303,4 +303,18 @@ describe("author command", () => {
 
     expect(message).toContain("declare this package's public interface");
   });
+
+  it("returns a non-zero code when a creator run fails", async () => {
+    const dir = tmpDir();
+    writeAuthorablePackage(dir);
+    const failing = (): never => {
+      throw new Error("the-local: the creator run failed");
+    };
+
+    const stderr = vi.spyOn(process.stderr, "write").mockImplementation(() => true);
+    const code = await main(["author"], dir, failing);
+    stderr.mockRestore();
+
+    expect(code).toBe(1);
+  });
 });
