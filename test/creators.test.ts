@@ -52,4 +52,8 @@ describe("develop creator", () => {
   it("fixes the body sections the develop local gets", () => {
     expect(creatorPrompt("develop")).toContain("## How to use it");
   });
+
+  it("cuts everything that is not a step", () => {
+    expect(creatorPrompt("develop")).toContain("Cut every sentence that is not a step");
+  });
 });

@@ -35,6 +35,23 @@ file alone and will never open its source. No paths into `src` or `dist`, no
 private classes, no "internally it…", no instruction to go read the package. If a
 fact is not part of the contract a consumer relies on, cut it.
 
+## What this local is for
+
+Using the package: calling its entry points from consuming code. Not installing
+it, not configuring it — that is the install local's.
+
+Write it as steps someone follows to implement, in order. Where an entry point
+takes a real decision — an option with no safe default, a choice that depends on
+the consumer's own domain — state the choice and tell the local to ask the
+developer rather than pick. Surfacing that question is part of the job.
+
+Cut every sentence that is not a step or a fact needed to complete one. No
+history, no rationale, no asides.
+
+`description` is the routing surface — name the real tasks. "Any `<package>`
+work" matches only someone who already named the package, which is when no local
+was needed.
+
 ## The shape
 
 ````
