@@ -45,7 +45,6 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.build.json && chmod +x dist/cli.js",
-    "build:agents": "pnpm build && node scripts/build-companion.mjs",
     "prepare": "pnpm build",
     "prepublishOnly": "pnpm build",
     "typecheck": "tsc --noEmit",

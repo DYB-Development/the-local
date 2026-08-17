@@ -41,6 +41,11 @@ describe("package publishability", () => {
     const scripts = pkg.scripts as Record<string, string>;
     expect(scripts.prepare).toBe("pnpm build");
   });
+
+  it("no longer renders its own locals from a build:agents script", () => {
+    const scripts = pkg.scripts as Record<string, string>;
+    expect(scripts["build:agents"]).toBeUndefined();
+  });
 });
 
 const publishWorkflow = readFileSync(
