@@ -120,4 +120,12 @@ describe("checkProvider interface", () => {
       "keystone-info.md: undeclared entry point: npx keystone stray",
     );
   });
+
+  it("skips the interface category when the manifest declares no entry points", () => {
+    const dir = writePackage({
+      declaration: { scope: "Keystone UI components" },
+      locals: { info: local({ entryPoints: ["npx keystone stray"] }) },
+    });
+    expect(checkProvider(dir)).toEqual([]);
+  });
 });

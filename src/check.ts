@@ -118,7 +118,12 @@ function misdocumented(local: Local, declared: InterfaceDeclaration): string[] {
     .map(({ span, owner }) => `${local.filename}: ${misplacement(span, owner)}`);
 }
 
+function declaresNothing(declared: InterfaceDeclaration): boolean {
+  return FACETS.every((facet) => declared.entryPoints[facet].length === 0);
+}
+
 function interfaceProblems(locals: Local[], declared: InterfaceDeclaration): string[] {
+  if (declaresNothing(declared)) return [];
   return locals.flatMap((local) => [
     ...undocumented(local, declared),
     ...misdocumented(local, declared),
