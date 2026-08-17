@@ -3,6 +3,7 @@ export interface Agent {
   name: string;
   description: string;
   tools: string;
+  scope?: string;
   body: string;
   knowledge?: string | string[];
 }
@@ -25,6 +26,7 @@ export function toMarkdown(agent: Agent): string {
     `name: ${qualifiedName(agent)}`,
     `description: ${agent.description}`,
     `tools: ${agent.tools}`,
+    `scope: ${agent.scope}`,
     "---",
     "",
     agent.body,
