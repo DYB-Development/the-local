@@ -255,3 +255,21 @@ describe("build command", () => {
     expect(code).toBe(1);
   });
 });
+
+function writeAuthorablePackage(dir: string): void {
+  mkdirSync(join(dir, "the-local"), { recursive: true });
+  writeFileSync(join(dir, "the-local", "interface.json"), JSON.stringify({ sources: [] }));
+}
+
+describe("author command", () => {
+  it("returns zero after authoring the provider's locals", async () => {
+    const dir = tmpDir();
+    writeAuthorablePackage(dir);
+
+    const stdout = captureStdout();
+    const code = await main(["author"], dir, () => undefined);
+    stdout.restore();
+
+    expect(code).toBe(0);
+  });
+});

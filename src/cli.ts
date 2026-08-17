@@ -2,6 +2,7 @@
 import { readFileSync, realpathSync } from "node:fs";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
+import { type CreatorRunner, authorProvider, runClaude } from "./author.js";
 import { checkProvider } from "./check.js";
 import { installLocals } from "./installer.js";
 import { scaffoldProvider } from "./provider.js";
@@ -73,7 +74,11 @@ export function run(argv: string[], cwd: string): number {
 // Dispatches every command. The provider-authoring commands run from a package
 // directory; install/refresh fall through to `run`. Async because `build` loads
 // the provider's config by dynamic import.
-export async function main(argv: string[], cwd: string): Promise<number> {
+export async function main(
+  argv: string[],
+  cwd: string,
+  runner: CreatorRunner = runClaude,
+): Promise<number> {
   const [command, target] = argv;
   if (command === "--version" || command === "-v") {
     process.stdout.write(`the-local ${packageVersion()}\n`);
@@ -91,6 +96,10 @@ export async function main(argv: string[], cwd: string): Promise<number> {
     }
     process.stderr.write(`the-local: malformed local(s):\n- ${problems.join("\n- ")}\n`);
     return 1;
+  }
+  if (command === "author") {
+    authorProvider(target ?? cwd, runner);
+    return 0;
   }
   if (command === "provider") {
     const { prefix } = scaffoldProvider(target ?? cwd);
