@@ -5,6 +5,8 @@ import { prefixFromName } from "./provider.js";
 
 const FRONT_MATTER_KEYS = ["name", "description", "tools", "scope"];
 
+const SECTIONS = ["## What", "## Interface", "## How to use it", "## Conventions"];
+
 const FACETS = ["info", "install", "develop"] as const;
 
 interface Local {
@@ -15,6 +17,12 @@ interface Local {
 function missingKeys(markdown: string): string[] {
   return FRONT_MATTER_KEYS.filter((key) => !new RegExp(`^${key}:`, "m").test(markdown)).map(
     (key) => `missing key: ${key}`,
+  );
+}
+
+function missingSections(markdown: string): string[] {
+  return SECTIONS.filter((section) => !markdown.includes(section)).map(
+    (section) => `missing section: ${section}`,
   );
 }
 
@@ -37,6 +45,8 @@ function existingLocals(packageDir: string): Local[] {
 
 export function checkProvider(packageDir: string): string[] {
   return existingLocals(packageDir).flatMap((local) =>
-    missingKeys(local.markdown).map((problem) => `${local.filename}: ${problem}`),
+    [...missingKeys(local.markdown), ...missingSections(local.markdown)].map(
+      (problem) => `${local.filename}: ${problem}`,
+    ),
   );
 }

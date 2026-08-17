@@ -59,4 +59,9 @@ describe("checkProvider format", () => {
     const dir = writePackage({ locals: { info: local().replace("tools: Read\n", "") } });
     expect(checkProvider(dir)).toContain("keystone-info.md: missing key: tools");
   });
+
+  it("reports a missing section, naming the file", () => {
+    const dir = writePackage({ locals: { info: local().replace("## Conventions\n", "") } });
+    expect(checkProvider(dir)).toContain("keystone-info.md: missing section: ## Conventions");
+  });
 });
