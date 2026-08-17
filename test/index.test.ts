@@ -20,4 +20,8 @@ describe("public entry", () => {
   it("re-exports the interface manifest reader", () => {
     expect(typeof api.readInterface).toBe("function");
   });
+
+  it("re-exports the creator prompt reader", () => {
+    expect(typeof api.creatorPrompt).toBe("function");
+  });
 });
