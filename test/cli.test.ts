@@ -90,6 +90,13 @@ describe("--help", () => {
     expect(stdout.output()).toContain("check");
   });
 
+  it("lists the author command", async () => {
+    const stdout = captureStdout();
+    await main(["--help"], tmpDir());
+    stdout.restore();
+    expect(stdout.output()).toContain("author");
+  });
+
   it("no longer lists the build command", async () => {
     const stdout = captureStdout();
     await main(["--help"], tmpDir());
@@ -253,5 +260,80 @@ describe("build command", () => {
     stderr.mockRestore();
 
     expect(code).toBe(1);
+  });
+});
+
+function writeAuthorablePackage(dir: string): void {
+  mkdirSync(join(dir, "the-local"), { recursive: true });
+  writeFileSync(join(dir, "the-local", "interface.json"), JSON.stringify({ sources: [] }));
+}
+
+describe("author command", () => {
+  it("returns zero after authoring the provider's locals", async () => {
+    const dir = tmpDir();
+    writeAuthorablePackage(dir);
+
+    const stdout = captureStdout();
+    const code = await main(["author"], dir, () => undefined);
+    stdout.restore();
+
+    expect(code).toBe(0);
+  });
+
+  it("tells the author to review the locals and check them", async () => {
+    const dir = tmpDir();
+    writeAuthorablePackage(dir);
+
+    const stdout = captureStdout();
+    await main(["author"], dir, () => undefined);
+    stdout.restore();
+
+    expect(stdout.output()).toContain("review the-local/agents/ and run `the-local check`");
+  });
+
+  it("returns a non-zero code when the interface is not declared", async () => {
+    const stderr = vi.spyOn(process.stderr, "write").mockImplementation(() => true);
+    const code = await main(["author"], tmpDir(), () => undefined);
+    stderr.mockRestore();
+
+    expect(code).toBe(1);
+  });
+
+  it("tells the author to declare the interface first", async () => {
+    let message = "";
+    const stderr = vi.spyOn(process.stderr, "write").mockImplementation((chunk) => {
+      message += String(chunk);
+      return true;
+    });
+    await main(["author"], tmpDir(), () => undefined);
+    stderr.mockRestore();
+
+    expect(message).toContain("declare this package's public interface");
+  });
+
+  it("returns a non-zero code when a creator run fails", async () => {
+    const dir = tmpDir();
+    writeAuthorablePackage(dir);
+    const failing = (): never => {
+      throw new Error("the-local: the creator run failed");
+    };
+
+    const stderr = vi.spyOn(process.stderr, "write").mockImplementation(() => true);
+    const code = await main(["author"], dir, failing);
+    stderr.mockRestore();
+
+    expect(code).toBe(1);
+  });
+
+  it("authors the given directory instead of cwd", async () => {
+    const packageDir = tmpDir();
+    writeAuthorablePackage(packageDir);
+    const directories: string[] = [];
+
+    const stdout = captureStdout();
+    await main(["author", packageDir], tmpDir(), (_prompt, dir) => directories.push(dir));
+    stdout.restore();
+
+    expect(directories).toEqual([packageDir, packageDir, packageDir]);
   });
 });
