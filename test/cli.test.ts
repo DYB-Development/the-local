@@ -90,6 +90,13 @@ describe("--help", () => {
     expect(stdout.output()).toContain("check");
   });
 
+  it("lists the author command", async () => {
+    const stdout = captureStdout();
+    await main(["--help"], tmpDir());
+    stdout.restore();
+    expect(stdout.output()).toContain("author");
+  });
+
   it("no longer lists the build command", async () => {
     const stdout = captureStdout();
     await main(["--help"], tmpDir());

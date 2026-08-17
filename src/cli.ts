@@ -17,6 +17,7 @@ Commands:
   install            Install agents into the host (default)
   refresh            Re-install agents into the host
   provider [dir]     Wire the current package up as a provider
+  author [dir]       Write a provider's locals from its interface manifest
   check [dir]        Verify a provider's committed locals against its manifest
 
 Options:
