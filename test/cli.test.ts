@@ -123,17 +123,11 @@ describe("provider command", () => {
 });
 
 describe("build command", () => {
-  it("re-renders a provider's agents from its config", async () => {
-    const dir = tmpDir();
-    writeFileSync(join(dir, "package.json"), JSON.stringify({ name: "@event-engine/store", version: "0.0.0" }));
-    const agent = { name: "info", description: "D", tools: "Read", body: "B", knowledge: "K" };
-    writeFileSync(
-      join(dir, "the-local.config.js"),
-      `export default ${JSON.stringify({ prefix: "store", agents: [agent] })};\n`,
-    );
+  it("is rejected as an unknown command", async () => {
+    const stderr = vi.spyOn(process.stderr, "write").mockImplementation(() => true);
+    const code = await main(["build"], tmpDir());
+    stderr.mockRestore();
 
-    await main(["build"], dir);
-
-    expect(existsSync(join(dir, "the-local/agents/store-info.md"))).toBe(true);
+    expect(code).toBe(1);
   });
 });
