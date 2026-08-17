@@ -81,4 +81,9 @@ describe("a failed creator run", () => {
       "is the `claude` CLI installed?",
     );
   });
+
+  it("names the directory the run failed in", () => {
+    const dir = join(tmpDir(), "missing");
+    expect(() => runClaude("AUTHOR", dir)).toThrow(dir);
+  });
 });
