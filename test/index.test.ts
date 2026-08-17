@@ -6,6 +6,10 @@ describe("public entry", () => {
     expect("companionAgents" in api).toBe(false);
   });
 
+  it("no longer re-exports the reference blob", () => {
+    expect("reference" in api).toBe(false);
+  });
+
   it("re-exports the provider-authoring API", () => {
     expect(typeof api.scaffoldProvider).toBe("function");
   });
