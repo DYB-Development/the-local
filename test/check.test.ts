@@ -81,4 +81,11 @@ describe("checkProvider scope", () => {
     });
     expect(checkProvider(dir)).toContain("the locals' scope lines disagree");
   });
+
+  it("stays silent when the manifest declares no scope and the locals agree", () => {
+    const dir = writePackage({
+      locals: { info: local({ scope: "one thing" }), install: local({ scope: "one thing" }) },
+    });
+    expect(checkProvider(dir)).toEqual([]);
+  });
 });
