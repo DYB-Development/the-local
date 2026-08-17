@@ -40,4 +40,8 @@ describe("develop creator", () => {
   it("takes its assignment from the interface manifest", () => {
     expect(creatorPrompt("develop")).toContain("Read `the-local/interface.json` first");
   });
+
+  it("verifies against the declared sources", () => {
+    expect(creatorPrompt("develop")).toContain("Read the files under `sources`");
+  });
 });

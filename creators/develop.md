@@ -20,3 +20,17 @@ made in the manifest. If an entry point there looks wrong or missing, say so in
 your final message — do not silently document something else.
 
 Copy the manifest's `scope` value verbatim into your front matter.
+
+## Verify against the source, then hide it
+
+Read the files under `sources` to get every signature, argument, and required
+order exactly right. The README, existing locals, and comments state intent and
+may be stale; the code wins.
+
+The `exports` map in `package.json` is what a consumer can actually import.
+Import paths you document have to resolve through it.
+
+Then hide all of it. Your reader is implementing against this package from your
+file alone and will never open its source. No paths into `src` or `dist`, no
+private classes, no "internally it…", no instruction to go read the package. If a
+fact is not part of the contract a consumer relies on, cut it.
