@@ -194,6 +194,20 @@ describe("check command", () => {
 
     expect(stdout.output()).toContain("the-local: locals hold the format");
   });
+
+  it("returns a non-zero code when a local is malformed", async () => {
+    const dir = tmpDir();
+    writeCheckablePackage(dir);
+    writeFileSync(join(dir, "the-local", "agents", "keystone-info.md"), "## What\n");
+
+    const stderr = vi.spyOn(process.stderr, "write").mockImplementation(() => true);
+    const stdout = captureStdout();
+    const code = await main(["check"], dir);
+    stdout.restore();
+    stderr.mockRestore();
+
+    expect(code).toBe(1);
+  });
 });
 
 describe("build command", () => {
