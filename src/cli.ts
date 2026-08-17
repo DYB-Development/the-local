@@ -84,8 +84,12 @@ export async function main(argv: string[], cwd: string): Promise<number> {
   }
   if (command === "check") {
     const problems = checkProvider(target ?? cwd);
-    process.stdout.write("the-local: locals hold the format\n");
-    return problems.length === 0 ? 0 : 1;
+    if (problems.length === 0) {
+      process.stdout.write("the-local: locals hold the format\n");
+      return 0;
+    }
+    process.stderr.write(`the-local: malformed local(s):\n- ${problems.join("\n- ")}\n`);
+    return 1;
   }
   if (command === "provider") {
     const { prefix } = scaffoldProvider(target ?? cwd);

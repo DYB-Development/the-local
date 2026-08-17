@@ -208,6 +208,24 @@ describe("check command", () => {
 
     expect(code).toBe(1);
   });
+
+  it("names each problem it found", async () => {
+    const dir = tmpDir();
+    writeCheckablePackage(dir);
+    writeFileSync(join(dir, "the-local", "agents", "keystone-info.md"), "## What\n");
+
+    let message = "";
+    const stderr = vi.spyOn(process.stderr, "write").mockImplementation((chunk) => {
+      message += String(chunk);
+      return true;
+    });
+    const stdout = captureStdout();
+    await main(["check"], dir);
+    stdout.restore();
+    stderr.mockRestore();
+
+    expect(message).toContain("keystone-info.md: missing key: name");
+  });
 });
 
 describe("build command", () => {
