@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
-import { readInterface } from "./interface.js";
+import { type Facet, type InterfaceDeclaration, readInterface } from "./interface.js";
 import { prefixFromName } from "./provider.js";
 
 const FRONT_MATTER_KEYS = ["name", "description", "tools", "scope"];
@@ -11,6 +11,7 @@ const SECTIONS = ["## What", "## Interface", "## How to use it", "## Conventions
 const FACETS = ["info", "install", "develop"] as const;
 
 interface Local {
+  facet: Facet;
   filename: string;
   markdown: string;
 }
@@ -37,18 +38,23 @@ function prefixOf(packageDir: string): string {
 function existingLocals(packageDir: string): Local[] {
   const prefix = prefixOf(packageDir);
   return FACETS.map((facet) => ({
+    facet,
     filename: `${prefix}-${facet}.md`,
     path: join(packageDir, "the-local", "agents", `${prefix}-${facet}.md`),
   }))
     .filter((local) => existsSync(local.path))
-    .map((local) => ({ filename: local.filename, markdown: readFileSync(local.path, "utf8") }));
+    .map(({ facet, filename, path }) => ({
+      facet,
+      filename,
+      markdown: readFileSync(path, "utf8"),
+    }));
 }
 
 function frontMatterScope(markdown: string): string | null {
   const block = /^---\n([\s\S]*?)\n---\n/.exec(markdown);
   if (!block) return null;
-  const scope = /^scope:[ \t]*(.*)$/m.exec(block[1]);
-  return scope ? scope[1].trim() : null;
+  const scope = /^scope:[ \t]*(.*)$/m.exec(block[1] ?? "");
+  return scope?.[1]?.trim() ?? null;
 }
 
 function formatProblems(locals: Local[]): string[] {
@@ -73,8 +79,38 @@ function scopeProblems(locals: Local[], declaredScope: string | null): string[] 
     .map((local) => `${local.filename}: scope does not match the manifest`);
 }
 
+function sectionLines(markdown: string, heading: string): string[] {
+  const lines = markdown.split("\n");
+  const start = lines.indexOf(heading);
+  if (start === -1) return [];
+  const rest = lines.slice(start + 1);
+  const end = rest.findIndex((line) => line.startsWith("## "));
+  return end === -1 ? rest : rest.slice(0, end);
+}
+
+function documented(local: Local): string[] {
+  return sectionLines(local.markdown, "## Interface")
+    .map((line) => /^\s*-\s+`([^`]+)`/.exec(line)?.[1])
+    .filter((span) => span !== undefined);
+}
+
+function undocumented(local: Local, declared: InterfaceDeclaration): string[] {
+  const spans = documented(local);
+  return declared.entryPoints[local.facet]
+    .filter((entryPoint) => !spans.some((span) => span.includes(entryPoint)))
+    .map((entryPoint) => `${local.filename}: undocumented entry point: ${entryPoint}`);
+}
+
+function interfaceProblems(locals: Local[], declared: InterfaceDeclaration): string[] {
+  return locals.flatMap((local) => undocumented(local, declared));
+}
+
 export function checkProvider(packageDir: string): string[] {
   const locals = existingLocals(packageDir);
   const declared = readInterface(packageDir);
-  return [...formatProblems(locals), ...scopeProblems(locals, declared.scope)];
+  return [
+    ...formatProblems(locals),
+    ...scopeProblems(locals, declared.scope),
+    ...interfaceProblems(locals, declared),
+  ];
 }

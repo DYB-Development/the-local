@@ -89,3 +89,15 @@ describe("checkProvider scope", () => {
     expect(checkProvider(dir)).toEqual([]);
   });
 });
+
+describe("checkProvider interface", () => {
+  it("reports a declared entry point its facet's local does not document", () => {
+    const dir = writePackage({
+      declaration: { install: ["npx keystone init"] },
+      locals: { install: local() },
+    });
+    expect(checkProvider(dir)).toContain(
+      "keystone-install.md: undocumented entry point: npx keystone init",
+    );
+  });
+});
