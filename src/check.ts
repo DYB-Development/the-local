@@ -1,14 +1,17 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
-import { type Facet, type InterfaceDeclaration, readInterface } from "./interface.js";
+import {
+  FACETS,
+  type Facet,
+  type InterfaceDeclaration,
+  readInterface,
+} from "./interface.js";
 import { prefixFromName } from "./provider.js";
 
 const FRONT_MATTER_KEYS = ["name", "description", "tools", "scope"];
 
 const SECTIONS = ["## What", "## Interface", "## How to use it", "## Conventions"];
-
-const FACETS = ["info", "install", "develop"] as const;
 
 interface Local {
   facet: Facet;

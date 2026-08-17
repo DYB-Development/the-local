@@ -3,7 +3,7 @@ import { join } from "node:path";
 
 export const INTERFACE_FILE = join("the-local", "interface.json");
 
-const FACETS = ["info", "install", "develop"] as const;
+export const FACETS = ["info", "install", "develop"] as const;
 
 export type Facet = (typeof FACETS)[number];
 
