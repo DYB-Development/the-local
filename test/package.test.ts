@@ -15,8 +15,8 @@ describe("package publishability", () => {
     expect(pkg.private).toBeUndefined();
   });
 
-  it("ships the built output, README, and the committed companion agents", () => {
-    expect(pkg.files).toEqual(["dist", "README.md", "the-local/agents"]);
+  it("ships the built output, README, the creator prompts, and the committed companion agents", () => {
+    expect(pkg.files).toEqual(["dist", "README.md", "creators", "the-local/agents"]);
   });
 
   it("resolves its main entry to the built output", () => {

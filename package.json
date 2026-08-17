@@ -25,6 +25,7 @@
   "files": [
     "dist",
     "README.md",
+    "creators",
     "the-local/agents"
   ],
   "the-local": {
