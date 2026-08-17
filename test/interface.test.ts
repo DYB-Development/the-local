@@ -49,4 +49,12 @@ describe("readInterface", () => {
       /the-local: the-local\/interface\.json is not valid JSON/,
     );
   });
+
+  it("rejects a manifest that is not an object", () => {
+    const dir = tmpDir();
+    writeInterface(dir, JSON.stringify(["npx keystone init"]));
+    expect(() => readInterface(dir)).toThrow(
+      /the-local: the-local\/interface\.json is not an object/,
+    );
+  });
 });

@@ -19,11 +19,16 @@ type RawDeclaration = Partial<Record<Facet, string[]>> & {
 };
 
 function parse(body: string): RawDeclaration {
+  let parsed: unknown;
   try {
-    return JSON.parse(body) as RawDeclaration;
+    parsed = JSON.parse(body);
   } catch {
     throw new Error(`the-local: ${INTERFACE_FILE} is not valid JSON.`);
   }
+  if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
+    throw new Error(`the-local: ${INTERFACE_FILE} is not an object.`);
+  }
+  return parsed as RawDeclaration;
 }
 
 function entryPoints(declaration: RawDeclaration): Record<Facet, string[]> {
