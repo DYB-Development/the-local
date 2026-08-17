@@ -98,7 +98,12 @@ export async function main(
     return 1;
   }
   if (command === "author") {
-    authorProvider(target ?? cwd, runner);
+    try {
+      authorProvider(target ?? cwd, runner);
+    } catch (error) {
+      process.stderr.write(`${error instanceof Error ? error.message : String(error)}\n`);
+      return 1;
+    }
     process.stdout.write(
       "the-local: authored locals; review the-local/agents/ and run `the-local check`\n",
     );

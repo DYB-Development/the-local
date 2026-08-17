@@ -283,4 +283,12 @@ describe("author command", () => {
 
     expect(stdout.output()).toContain("review the-local/agents/ and run `the-local check`");
   });
+
+  it("returns a non-zero code when the interface is not declared", async () => {
+    const stderr = vi.spyOn(process.stderr, "write").mockImplementation(() => true);
+    const code = await main(["author"], tmpDir(), () => undefined);
+    stderr.mockRestore();
+
+    expect(code).toBe(1);
+  });
 });
