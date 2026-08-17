@@ -86,4 +86,8 @@ describe("info creator", () => {
   it("cuts everything that is not a fact the reader needs", () => {
     expect(creatorPrompt("info")).toContain("Cut every sentence that is not a fact");
   });
+
+  it("checks no other facet's entry points leaked in", () => {
+    expect(creatorPrompt("info")).toContain("## Before you finish");
+  });
 });

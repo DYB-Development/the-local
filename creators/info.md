@@ -71,3 +71,8 @@ manifest declares them under `info`>
 ## Conventions
 <the vocabulary and naming needed to read this package's world correctly>
 ````
+
+## Before you finish
+
+- Nothing declared under `install` or `develop` appears anywhere in your file.
+- Re-read it with no access to the source. Does it orient someone in one page?
