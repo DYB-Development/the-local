@@ -162,6 +162,14 @@ describe("provider command", () => {
     stdout.restore();
     expect(existsSync(join(dir, "the-local.config.js"))).toBe(false);
   });
+
+  it("returns a non-zero code when the target directory is not a package", async () => {
+    const stderr = vi.spyOn(process.stderr, "write").mockImplementation(() => true);
+    const code = await main(["provider"], tmpDir());
+    stderr.mockRestore();
+
+    expect(code).toBe(1);
+  });
 });
 
 function writeCheckablePackage(dir: string): void {

@@ -111,7 +111,13 @@ export async function main(
     return 0;
   }
   if (command === "provider") {
-    const { prefix } = scaffoldProvider(target ?? cwd);
+    let prefix;
+    try {
+      ({ prefix } = scaffoldProvider(target ?? cwd));
+    } catch (error) {
+      process.stderr.write(`${error instanceof Error ? error.message : String(error)}\n`);
+      return 1;
+    }
     process.stdout.write(`the-local: wired provider "${prefix}".\n`);
     return 0;
   }
