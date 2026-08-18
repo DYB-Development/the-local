@@ -32,6 +32,11 @@ describe("package publishability", () => {
     });
   });
 
+  it("clears the dist before compiling so stale output cannot ship", () => {
+    const scripts = pkg.scripts as Record<string, string>;
+    expect(scripts.build).toMatch(/^rm -rf dist &&/);
+  });
+
   it("rebuilds the dist before publishing", () => {
     const scripts = pkg.scripts as Record<string, string>;
     expect(scripts.prepublishOnly).toBe("pnpm build");
