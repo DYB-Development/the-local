@@ -280,6 +280,14 @@ describe("check command", () => {
     expect(code).toBe(1);
   });
 
+  it("returns a non-zero code when the target directory is not a package", async () => {
+    const stderr = vi.spyOn(process.stderr, "write").mockImplementation(() => true);
+    const code = await main(["check"], tmpDir());
+    stderr.mockRestore();
+
+    expect(code).toBe(1);
+  });
+
   it("checks the given directory instead of cwd", async () => {
     const packageDir = tmpDir();
     writeCheckablePackage(packageDir);

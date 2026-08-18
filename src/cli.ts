@@ -90,7 +90,13 @@ export async function main(
     return 0;
   }
   if (command === "check") {
-    const problems = checkProvider(target ?? cwd);
+    let problems;
+    try {
+      problems = checkProvider(target ?? cwd);
+    } catch (error) {
+      process.stderr.write(`${error instanceof Error ? error.message : String(error)}\n`);
+      return 1;
+    }
     if (problems.length === 0) {
       process.stdout.write("the-local: locals hold the format\n");
       return 0;
