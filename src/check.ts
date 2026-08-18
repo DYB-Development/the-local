@@ -4,6 +4,7 @@ import { join } from "node:path";
 import {
   FACETS,
   type Facet,
+  INTERFACE_FILE,
   type InterfaceDeclaration,
   readInterface,
 } from "./interface.js";
@@ -55,6 +56,7 @@ function existingLocals(packageDir: string): Local[] {
 
 function uncommittedLocalProblems(packageDir: string, locals: Local[]): string[] {
   if (locals.length > 0) return [];
+  if (!existsSync(join(packageDir, INTERFACE_FILE))) return [];
   const prefix = prefixOf(packageDir);
   return FACETS.map((facet) => `${prefix}-${facet}.md: no local committed`);
 }

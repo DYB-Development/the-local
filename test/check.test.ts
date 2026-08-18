@@ -143,4 +143,9 @@ describe("checkProvider locals", () => {
     const dir = writePackage({ declaration: { scope: "Keystone UI components" } });
     expect(checkProvider(dir)).toContain("keystone-info.md: no local committed");
   });
+
+  it("stays silent when the package has no interface manifest", () => {
+    const dir = writePackage({});
+    expect(checkProvider(dir)).toEqual([]);
+  });
 });
