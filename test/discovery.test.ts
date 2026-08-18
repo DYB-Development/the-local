@@ -1,5 +1,5 @@
 import { mkdirSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
+import { basename, join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { directDependencies, discoverProviders } from "../src/discovery.js";
 import { tmpDir, writeProvider } from "./helpers.js";
@@ -100,5 +100,19 @@ describe("discoverProviders", () => {
       "the-local": { prefix: "custom" },
     });
     expect(discoverProviders(dir).map((p) => p.prefix)).toEqual(["custom"]);
+  });
+
+  it("reads agents from a declared agentsDir instead of the default location", () => {
+    const dir = tmpDir();
+    writeManifest(dir, { name: "host", dependencies: { keystone_ui: "*" } });
+    writeProvider(join(dir, "node_modules"), {
+      packageName: "keystone_ui",
+      prefix: "keystone",
+      agentsDir: "shipped/agents",
+      agents: [{ name: "scaffold" }],
+    });
+    expect(discoverProviders(dir).flatMap((p) => p.agentFiles.map((f) => basename(f)))).toEqual([
+      "keystone-scaffold.md",
+    ]);
   });
 });
