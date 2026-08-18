@@ -241,6 +241,24 @@ describe("check command", () => {
     expect(message).toContain("keystone-info.md: missing key: name");
   });
 
+  it("returns a non-zero code when the package declares an interface but ships no locals", async () => {
+    const dir = tmpDir();
+    writeFileSync(join(dir, "package.json"), JSON.stringify({ name: "keystone", version: "0.0.0" }));
+    mkdirSync(join(dir, "the-local"), { recursive: true });
+    writeFileSync(
+      join(dir, "the-local", "interface.json"),
+      JSON.stringify({ scope: "Keystone UI components" }),
+    );
+
+    const stderr = vi.spyOn(process.stderr, "write").mockImplementation(() => true);
+    const stdout = captureStdout();
+    const code = await main(["check"], dir);
+    stdout.restore();
+    stderr.mockRestore();
+
+    expect(code).toBe(1);
+  });
+
   it("checks the given directory instead of cwd", async () => {
     const packageDir = tmpDir();
     writeCheckablePackage(packageDir);
