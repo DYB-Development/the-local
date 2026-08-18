@@ -1,9 +1,9 @@
 const DEFAULT_AGENTS_DIR = "the-local/agents";
 
-// A provider's validated `the-local` declaration, with documented defaults
-// applied. This is the locked shape of the `package.json` `"the-local"` block.
+// A provider's validated `the-local` declaration. This is the locked shape of
+// the `package.json` `"the-local"` block.
 export interface Declaration {
-  prefix: string;
+  prefix: string | null;
   scope: string | null;
   agentsDir: string;
 }
@@ -19,26 +19,26 @@ function requireNonEmptyString(value: unknown, field: string, packageName: strin
 }
 
 // Validate and normalise a package's raw `"the-local"` field into a
-// `Declaration`, applying the documented defaults. `fallbackPrefix` is the
-// install name used when the declaration omits an explicit prefix.
-export function parseDeclaration(raw: unknown, fallbackPrefix: string): Declaration {
+// `Declaration`. Fields the declaration omits are left unset for the caller to
+// resolve, except `agentsDir`, whose default is documented here.
+export function parseDeclaration(raw: unknown, packageName: string): Declaration {
   if (typeof raw !== "object" || raw === null || Array.isArray(raw)) {
     throw new Error(
-      `the-local: ${fallbackPrefix} has a "the-local" declaration that is not an object.`,
+      `the-local: ${packageName} has a "the-local" declaration that is not an object.`,
     );
   }
   const declaration = raw as { prefix?: string; scope?: string | null; agentsDir?: string };
-  requireNonEmptyString(declaration.prefix, "prefix", fallbackPrefix);
-  requireNonEmptyString(declaration.agentsDir, "agentsDir", fallbackPrefix);
+  requireNonEmptyString(declaration.prefix, "prefix", packageName);
+  requireNonEmptyString(declaration.agentsDir, "agentsDir", packageName);
   if (
     declaration.scope !== undefined &&
     declaration.scope !== null &&
     typeof declaration.scope !== "string"
   ) {
-    throw new Error(`the-local: ${fallbackPrefix} "the-local".scope must be a string or null.`);
+    throw new Error(`the-local: ${packageName} "the-local".scope must be a string or null.`);
   }
   return {
-    prefix: declaration.prefix ?? fallbackPrefix,
+    prefix: declaration.prefix ?? null,
     scope: declaration.scope ?? null,
     agentsDir: declaration.agentsDir ?? DEFAULT_AGENTS_DIR,
   };

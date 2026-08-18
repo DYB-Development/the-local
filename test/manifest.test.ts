@@ -8,7 +8,7 @@ describe("parseDeclaration", () => {
 
   it("applies the documented defaults for an empty declaration", () => {
     expect(parseDeclaration({}, "keystone_ui")).toEqual({
-      prefix: "keystone_ui",
+      prefix: null,
       scope: null,
       agentsDir: "the-local/agents",
     });

@@ -76,4 +76,11 @@ describe("discoverProviders", () => {
     writeUndeclaredProvider(dir, "keystone_ui", ["keystone-develop.md"]);
     expect(discoverProviders(dir).map((p) => p.packageName)).toEqual(["keystone_ui"]);
   });
+
+  it("derives the prefix from the agent filename when there is no declaration", () => {
+    const dir = tmpDir();
+    writeManifest(dir, { name: "host", dependencies: { keystone_ui: "*" } });
+    writeUndeclaredProvider(dir, "keystone_ui", ["keystone-develop.md"]);
+    expect(discoverProviders(dir).map((p) => p.prefix)).toEqual(["keystone"]);
+  });
 });
