@@ -24,3 +24,10 @@ describe("the provider guide", () => {
     expect(FACETS.filter((facet) => !guide.includes(`### \`${facet}\``))).toEqual([]);
   });
 });
+
+describe("the changelog", () => {
+  it("documents the package's current version", () => {
+    const { version } = JSON.parse(doc("package.json")) as { version: string };
+    expect(doc("CHANGELOG.md")).toContain(`## ${version}`);
+  });
+});
