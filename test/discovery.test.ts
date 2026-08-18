@@ -132,4 +132,31 @@ describe("discoverProviders", () => {
     });
     expect(discoverProviders(dir).map((p) => p.scope)).toEqual(["UI — pages, forms, tables"]);
   });
+
+  it("uses the first agent that declares a scope as the representative", () => {
+    const dir = tmpDir();
+    writeManifest(dir, { name: "host", dependencies: { keystone_ui: "*" } });
+    writeProvider(join(dir, "node_modules"), {
+      packageName: "keystone_ui",
+      prefix: "keystone",
+      agents: [
+        { name: "a-unscoped", content: "---\nname: keystone-a-unscoped\nscope:\n---\n" },
+        { name: "b-scoped", content: agentFile("UI — pages, forms, tables") },
+        { name: "c-scoped", content: agentFile("Something else") },
+      ],
+    });
+    expect(discoverProviders(dir).map((p) => p.scope)).toEqual(["UI — pages, forms, tables"]);
+  });
+
+  it("falls back to the package.json scope when no agent declares one", () => {
+    const dir = tmpDir();
+    writeManifest(dir, { name: "host", dependencies: { keystone_ui: "*" } });
+    writeProvider(join(dir, "node_modules"), {
+      packageName: "keystone_ui",
+      prefix: "keystone",
+      scope: "Declared in the manifest",
+      agents: [{ name: "scaffold" }],
+    });
+    expect(discoverProviders(dir).map((p) => p.scope)).toEqual(["Declared in the manifest"]);
+  });
 });
