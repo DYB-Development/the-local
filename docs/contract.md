@@ -22,6 +22,7 @@ file is YAML frontmatter, then the role body, then the provider's knowledge:
 name: keystone-scaffold
 description: Use PROACTIVELY for UI work.
 tools: Read, Write, Edit
+scope: 
 ---
 
 You build UI.
@@ -30,7 +31,9 @@ API docs.
 ```
 
 - `name` is the qualified name `<prefix>-<name>` — the filename namespace.
-- `description` and `tools` are emitted verbatim, one per line.
+- `description`, `tools`, and `scope` are emitted verbatim, one per line.
+- `scope` is always emitted, empty when the agent declares none; discovery reads
+  it back to build the delegation bullet (§2).
 - A blank line separates the frontmatter, the body, and the knowledge.
 - Array knowledge is joined with a blank line (`\n\n`).
 - The file ends with a single trailing newline.
@@ -67,34 +70,6 @@ See each agent's description for specifics.
 - Otherwise append the block after the host's existing content, separated by a
   blank line. The host's own content is never touched.
 
-## 2.1 `CLAUDE.md` develop-process block
-
-Alongside the delegation block, the host writes a second managed block carrying
-the canonical develop-process rules — read at the start of every session so the
-host agent follows one source of truth — and a standalone copy of those rules at
-`develop_process_rules.md`:
-
-```md
-<!-- the_local:process:begin -->
-Read and follow this develop process for all work in this project. It is
-also written verbatim to `develop_process_rules.md` — reference that file directly.
-
-# Develop Process
-
-...
-<!-- the_local:process:end -->
-```
-
-- The markers are exactly `<!-- the_local:process:begin -->` and
-  `<!-- the_local:process:end -->` in both languages. They are distinct from the
-  delegation markers (§2), so the two blocks coexist in one `CLAUDE.md` and
-  neither CLI clobbers the other.
-- The block embeds the rules verbatim and the standalone `develop_process_rules.md`
-  holds the same content, both byte-identical across the gem and the npm package
-  so the two never write conflicting copies.
-- The same merge rules as §2 apply: replace a marked block in place, be the whole
-  file when empty, otherwise append after the host's content.
-
 ## 3. Direct-dependency scope
 
 Only the host's **direct** dependencies contribute locals; transitive providers
@@ -113,29 +88,35 @@ where a provider belongs.
 
 ## 4. Authoring a provider
 
-`the-local provider [dir]` turns a package into a provider (the analog of Ruby's
-`the_local:provider` generator): it writes a starter `the-local.config.js` —
-plain ESM data (`prefix`, `scope`, `agents`) with no runtime dependency on
-the-local — adds the `"the-local"` block and `the-local/agents` to the package's
-`files`, and renders the initial committed `.md`. After editing the config,
-`the-local build [dir]` re-renders the committed agents from it. The committed
-`.md` remain the contract a host reads (§1); the config is only the source they
-are built from.
+A provider commits its locals; nothing is rendered at install time. It declares
+its public interface in `the-local/interface.json`, writes the three facet locals
+from that manifest with `the-local author [dir]`, and verifies the committed
+files against it with `the-local check [dir]`. `the-local provider [dir]` (the
+analog of Ruby's `the_local:provider` generator) is wiring only: it writes the
+`"the-local"` block and adds the agents directory to the package's `files`. The
+committed `.md` remain the contract a host reads (§1). See
+[`PROVIDERS.md`](./PROVIDERS.md).
 
 ### 4.1 The `the-local` declaration block
 
-A provider declares itself to discovery (§2) with a `"the-local"` block in its
-`package.json`. The shape is locked: it must be an object, and every field is
+Discovery finds a provider by its committed `the-local/agents/*.md`: a dependency
+that ships them contributes locals, and no declaration is required. The prefix
+comes from the filename and the delegation scope line (§2) from the agent file's
+`scope:` front matter.
+
+A package may still commit a `"the-local"` block in its `package.json` to
+override that. The shape is locked: it must be an object, and every field is
 optional with a documented default.
 
-| Field       | Type            | Default                                         |
-| ----------- | --------------- | ----------------------------------------------- |
-| `prefix`    | non-empty string | the install name (the dependency's package key) |
-| `scope`     | string or `null` | `null` (renders a bare `<prefix>-* agents` line) |
-| `agentsDir` | non-empty string | `the-local/agents`                              |
+| Field       | Type             | Default                                          |
+| ----------- | ---------------- | ------------------------------------------------ |
+| `prefix`    | non-empty string | the prefix read from the committed filenames     |
+| `scope`     | string or `null` | the `scope:` front matter of a committed agent   |
+| `agentsDir` | non-empty string | `the-local/agents`                               |
 
-Discovery validates the block and fails with a clear, package-named error on a
-non-object declaration or a field of the wrong type (an empty string is treated
-as misconfiguration, not a default). This mirrors the Ruby gem: the declaration
-is the one place a provider customises its namespace, scope phrase, and committed
-agents directory.
+Front matter wins over the declared `scope`; the declaration is the fallback when
+no committed agent carries one. Discovery validates the block and fails with a
+clear, package-named error on a non-object declaration or a field of the wrong
+type (an empty string is treated as misconfiguration, not a default). A package
+that declares the block but ships no committed agents is an error, not a silent
+skip.
