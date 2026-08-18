@@ -1,5 +1,6 @@
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { basename, dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { parseDeclaration } from "./manifest.js";
 import { allowedProviders } from "./scope.js";
 
@@ -90,9 +91,13 @@ function providerFrom(packageDir: string, packageName: string): DiscoveredProvid
   };
 }
 
+function ownPackageName(): string | undefined {
+  return readManifest(fileURLToPath(new URL("../package.json", import.meta.url)))?.name;
+}
+
 function hostProvider(hostDir: string): DiscoveredProvider | null {
   const name = readManifest(join(hostDir, "package.json"))?.name;
-  if (name === undefined) return null;
+  if (name === undefined || name === ownPackageName()) return null;
   return providerFrom(hostDir, name);
 }
 

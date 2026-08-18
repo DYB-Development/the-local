@@ -144,4 +144,12 @@ describe("installLocals", () => {
       "SHIPPED BY THE HOST",
     );
   });
+
+  it("skips the host's own locals when the host is the-local's own repository", () => {
+    const dir = hostShippingLocals("the-local");
+
+    installLocals(dir);
+
+    expect(existsSync(join(dir, ".claude/agents/app-review.md"))).toBe(false);
+  });
 });
