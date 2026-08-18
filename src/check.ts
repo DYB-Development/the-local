@@ -4,6 +4,7 @@ import { join } from "node:path";
 import {
   FACETS,
   type Facet,
+  INTERFACE_FILE,
   type InterfaceDeclaration,
   readInterface,
 } from "./interface.js";
@@ -51,6 +52,13 @@ function existingLocals(packageDir: string): Local[] {
       filename,
       markdown: readFileSync(path, "utf8"),
     }));
+}
+
+function uncommittedLocalProblems(packageDir: string, locals: Local[]): string[] {
+  if (locals.length > 0) return [];
+  if (!existsSync(join(packageDir, INTERFACE_FILE))) return [];
+  const prefix = prefixOf(packageDir);
+  return FACETS.map((facet) => `${prefix}-${facet}.md: no local committed`);
 }
 
 function frontMatterScope(markdown: string): string | null {
@@ -137,6 +145,7 @@ export function checkProvider(packageDir: string): string[] {
   const locals = existingLocals(packageDir);
   const declared = readInterface(packageDir);
   return [
+    ...uncommittedLocalProblems(packageDir, locals),
     ...formatProblems(locals),
     ...scopeProblems(locals, declared.scope),
     ...interfaceProblems(locals, declared),
