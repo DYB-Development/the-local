@@ -14,8 +14,8 @@ describe("public entry", () => {
     expect(typeof api.scaffoldProvider).toBe("function");
   });
 
-  it("re-exports the develop-process writer", () => {
-    expect(typeof api.writeProcessDoc).toBe("function");
+  it("no longer re-exports the develop-process writer", () => {
+    expect("writeProcessDoc" in api).toBe(false);
   });
 
   it("re-exports the interface manifest reader", () => {
