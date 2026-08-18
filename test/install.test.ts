@@ -35,6 +35,14 @@ function hostShippingLocals(name: string): string {
   return dir;
 }
 
+function attemptInstall(dir: string): void {
+  try {
+    installLocals(dir);
+  } catch {
+    return;
+  }
+}
+
 describe("installLocals", () => {
   it("copies the committed agent file verbatim", () => {
     const dir = host(["keystone_ui"]);
@@ -149,6 +157,14 @@ describe("installLocals", () => {
     const missing = join(tmpDir(), "typo");
 
     expect(() => installLocals(missing)).toThrowError(/the-local:/);
+  });
+
+  it("leaves a host directory that does not exist uncreated", () => {
+    const missing = join(tmpDir(), "typo");
+
+    attemptInstall(missing);
+
+    expect(existsSync(missing)).toBe(false);
   });
 
   it("skips the host's own locals when the host is the-local's own repository", () => {
