@@ -1,9 +1,13 @@
-import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { installLocals } from "../src/installer.js";
 import { PROCESS_BEGIN_MARKER } from "../src/process.js";
 import { tmpDir, writeHost, writeProvider } from "./helpers.js";
+
+const EXISTING_PROCESS_BLOCK = `<!-- the_local:process:begin -->
+RULES A PREVIOUS VERSION WROTE — the installer no longer owns this.
+<!-- the_local:process:end -->`;
 
 function host(deps: string[]): string {
   const dir = tmpDir();
@@ -72,7 +76,7 @@ describe("installLocals", () => {
     expect(existsSync(join(dir, "develop_process_rules.md"))).toBe(false);
   });
 
-  it("propagates the develop-process block into CLAUDE.md", () => {
+  it("does not write a process block into CLAUDE.md", () => {
     const dir = host(["keystone_ui"]);
     writeProvider(nodeModules(dir), {
       packageName: "keystone_ui",
@@ -82,7 +86,21 @@ describe("installLocals", () => {
 
     installLocals(dir);
 
-    expect(readFileSync(join(dir, "CLAUDE.md"), "utf8")).toContain(PROCESS_BEGIN_MARKER);
+    expect(readFileSync(join(dir, "CLAUDE.md"), "utf8")).not.toContain(PROCESS_BEGIN_MARKER);
+  });
+
+  it("leaves a process block already present in CLAUDE.md untouched", () => {
+    const dir = host(["keystone_ui"]);
+    writeProvider(nodeModules(dir), {
+      packageName: "keystone_ui",
+      prefix: "keystone",
+      agents: [{ name: "scaffold" }],
+    });
+    writeFileSync(join(dir, "CLAUDE.md"), `${EXISTING_PROCESS_BLOCK}\n`);
+
+    installLocals(dir);
+
+    expect(readFileSync(join(dir, "CLAUDE.md"), "utf8")).toContain(EXISTING_PROCESS_BLOCK);
   });
 
   it("writes every allowed agent", () => {
