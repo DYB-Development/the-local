@@ -1,4 +1,4 @@
-import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { installLocals } from "../src/installer.js";
@@ -18,6 +18,21 @@ function host(deps: string[]): string {
 
 function nodeModules(dir: string): string {
   return join(dir, "node_modules");
+}
+
+function hostShippingLocals(name: string): string {
+  const dir = tmpDir();
+  mkdirSync(join(dir, "the-local/agents"), { recursive: true });
+  writeFileSync(join(dir, "the-local/agents/app-review.md"), "SHIPPED BY THE HOST");
+  writeFileSync(
+    join(dir, "package.json"),
+    JSON.stringify({
+      name,
+      version: "0.0.0",
+      "the-local": { prefix: "app", scope: null, agentsDir: "the-local/agents" },
+    }),
+  );
+  return dir;
 }
 
 describe("installLocals", () => {
@@ -118,5 +133,15 @@ describe("installLocals", () => {
       "keystone-review.md",
       "keystone-scaffold.md",
     ]);
+  });
+
+  it("installs the host's own locals, which no dependency ships", () => {
+    const dir = hostShippingLocals("my_app");
+
+    installLocals(dir);
+
+    expect(readFileSync(join(dir, ".claude/agents/app-review.md"), "utf8")).toBe(
+      "SHIPPED BY THE HOST",
+    );
   });
 });
