@@ -8,6 +8,12 @@ function writeManifest(dir: string, manifest: object): void {
   writeFileSync(join(dir, "package.json"), JSON.stringify(manifest));
 }
 
+function agentFile(scope: string): string {
+  return ["---", "name: keystone-scaffold", `scope: ${scope}`, "---", "", "You build UI.", ""].join(
+    "\n",
+  );
+}
+
 function writeUndeclaredProvider(hostDir: string, packageName: string, agentFiles: string[]): void {
   const pkgDir = join(hostDir, "node_modules", packageName);
   const agentsDir = join(pkgDir, "the-local", "agents");
@@ -114,5 +120,16 @@ describe("discoverProviders", () => {
     expect(discoverProviders(dir).flatMap((p) => p.agentFiles.map((f) => basename(f)))).toEqual([
       "keystone-scaffold.md",
     ]);
+  });
+
+  it("takes the provider scope from its agent front matter", () => {
+    const dir = tmpDir();
+    writeManifest(dir, { name: "host", dependencies: { keystone_ui: "*" } });
+    writeProvider(join(dir, "node_modules"), {
+      packageName: "keystone_ui",
+      prefix: "keystone",
+      agents: [{ name: "scaffold", content: agentFile("UI — pages, forms, tables") }],
+    });
+    expect(discoverProviders(dir).map((p) => p.scope)).toEqual(["UI — pages, forms, tables"]);
   });
 });
