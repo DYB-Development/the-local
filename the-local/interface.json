@@ -1,0 +1,42 @@
+{
+  "scope": "Claude Code locals — packages ship subagents that the-local installs into a host app",
+  "install": [
+    "the-local install",
+    "the-local refresh",
+    "the-local provider"
+  ],
+  "develop": [
+    "the-local author",
+    "the-local check",
+    "toMarkdown",
+    "agentFilename",
+    "qualifiedName",
+    "delegationRule",
+    "mergeTrigger",
+    "BEGIN_MARKER",
+    "END_MARKER",
+    "allowedProviders",
+    "directDependencies",
+    "discoverProviders",
+    "installLocals",
+    "installAgents",
+    "writeTrigger",
+    "readInterface",
+    "INTERFACE_FILE",
+    "creatorPrompt",
+    "prefixFromName",
+    "scaffoldProvider"
+  ],
+  "sources": [
+    "src/cli.ts",
+    "src/index.ts",
+    "src/agent.ts",
+    "src/trigger.ts",
+    "src/scope.ts",
+    "src/discovery.ts",
+    "src/installer.ts",
+    "src/creators.ts",
+    "src/interface.ts",
+    "src/provider.ts"
+  ]
+}
