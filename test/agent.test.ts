@@ -50,4 +50,8 @@ describe("scopeFromFrontMatter", () => {
   it("reads the scope declared in the front matter", () => {
     expect(scopeFromFrontMatter(toMarkdown(build()))).toBe("UI — pages, forms, tables");
   });
+
+  it("treats an empty scope value as no scope", () => {
+    expect(scopeFromFrontMatter(toMarkdown(build({ scope: undefined })))).toBeNull();
+  });
 });
