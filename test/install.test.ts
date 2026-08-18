@@ -2,8 +2,9 @@ import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { installLocals } from "../src/installer.js";
-import { PROCESS_BEGIN_MARKER } from "../src/process.js";
 import { tmpDir, writeHost, writeProvider } from "./helpers.js";
+
+const PROCESS_BEGIN_MARKER = "<!-- the_local:process:begin -->";
 
 const EXISTING_PROCESS_BLOCK = `<!-- the_local:process:begin -->
 RULES A PREVIOUS VERSION WROTE — the installer no longer owns this.
