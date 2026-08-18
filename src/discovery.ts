@@ -1,5 +1,5 @@
 import { existsSync, readFileSync, readdirSync } from "node:fs";
-import { dirname, join } from "node:path";
+import { basename, dirname, join } from "node:path";
 import { parseDeclaration } from "./manifest.js";
 
 export interface DiscoveredProvider {
@@ -51,6 +51,15 @@ function resolvePackageDir(hostDir: string, dependency: string): string | null {
   }
 }
 
+function prefixFromAgentFiles(agentFiles: string[]): string | null {
+  for (const file of agentFiles) {
+    const name = basename(file, ".md");
+    const separator = name.lastIndexOf("-");
+    if (separator > 0) return name.slice(0, separator);
+  }
+  return null;
+}
+
 export function discoverProviders(hostDir: string): DiscoveredProvider[] {
   const providers: DiscoveredProvider[] = [];
 
@@ -58,11 +67,13 @@ export function discoverProviders(hostDir: string): DiscoveredProvider[] {
     const packageDir = resolvePackageDir(hostDir, dependency);
     if (!packageDir) continue;
     const manifest = readManifest(join(packageDir, "package.json"));
-    if (!manifest || manifest["the-local"] === undefined) continue;
+    if (!manifest) continue;
 
-    const declaration = parseDeclaration(manifest["the-local"], dependency);
+    const declared = manifest["the-local"] !== undefined;
+    const declaration = parseDeclaration(manifest["the-local"] ?? {}, dependency);
     const agentsDir = join(packageDir, declaration.agentsDir);
     if (!existsSync(agentsDir)) {
+      if (!declared) continue;
       throw new Error(
         `the-local: ${dependency} declares the-local locals but ships no committed agents at ` +
           `${declaration.agentsDir}. Build and commit them in ${dependency}.`,
@@ -73,10 +84,11 @@ export function discoverProviders(hostDir: string): DiscoveredProvider[] {
       .filter((entry) => entry.endsWith(".md"))
       .sort()
       .map((entry) => join(agentsDir, entry));
+    if (!declared && agentFiles.length === 0) continue;
 
     providers.push({
       packageName: dependency,
-      prefix: declaration.prefix,
+      prefix: declaration.prefix ?? prefixFromAgentFiles(agentFiles) ?? dependency,
       scope: declaration.scope,
       agentFiles,
     });

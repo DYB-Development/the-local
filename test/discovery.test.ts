@@ -1,11 +1,19 @@
 import { mkdirSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
+import { basename, join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { directDependencies, discoverProviders } from "../src/discovery.js";
 import { tmpDir, writeProvider } from "./helpers.js";
 
 function writeManifest(dir: string, manifest: object): void {
   writeFileSync(join(dir, "package.json"), JSON.stringify(manifest));
+}
+
+function writeUndeclaredProvider(hostDir: string, packageName: string, agentFiles: string[]): void {
+  const pkgDir = join(hostDir, "node_modules", packageName);
+  const agentsDir = join(pkgDir, "the-local", "agents");
+  mkdirSync(agentsDir, { recursive: true });
+  writeManifest(pkgDir, { name: packageName });
+  for (const file of agentFiles) writeFileSync(join(agentsDir, file), "stub");
 }
 
 describe("directDependencies", () => {
@@ -60,5 +68,51 @@ describe("discoverProviders", () => {
       agents: [{ name: "scaffold" }],
     });
     expect(discoverProviders(hostDir).map((p) => p.packageName)).toEqual(["keystone_ui"]);
+  });
+
+  it("discovers a dependency that ships agent files without a the-local declaration", () => {
+    const dir = tmpDir();
+    writeManifest(dir, { name: "host", dependencies: { keystone_ui: "*" } });
+    writeUndeclaredProvider(dir, "keystone_ui", ["keystone-develop.md"]);
+    expect(discoverProviders(dir).map((p) => p.packageName)).toEqual(["keystone_ui"]);
+  });
+
+  it("derives the prefix from the agent filename when there is no declaration", () => {
+    const dir = tmpDir();
+    writeManifest(dir, { name: "host", dependencies: { keystone_ui: "*" } });
+    writeUndeclaredProvider(dir, "keystone_ui", ["keystone-develop.md"]);
+    expect(discoverProviders(dir).map((p) => p.prefix)).toEqual(["keystone"]);
+  });
+
+  it("skips a dependency whose undeclared agents directory holds no agent files", () => {
+    const dir = tmpDir();
+    writeManifest(dir, { name: "host", dependencies: { keystone_ui: "*" } });
+    writeUndeclaredProvider(dir, "keystone_ui", []);
+    expect(discoverProviders(dir)).toEqual([]);
+  });
+
+  it("prefers a declared prefix over the one derived from the filename", () => {
+    const dir = tmpDir();
+    writeManifest(dir, { name: "host", dependencies: { keystone_ui: "*" } });
+    writeUndeclaredProvider(dir, "keystone_ui", ["keystone-develop.md"]);
+    writeManifest(join(dir, "node_modules", "keystone_ui"), {
+      name: "keystone_ui",
+      "the-local": { prefix: "custom" },
+    });
+    expect(discoverProviders(dir).map((p) => p.prefix)).toEqual(["custom"]);
+  });
+
+  it("reads agents from a declared agentsDir instead of the default location", () => {
+    const dir = tmpDir();
+    writeManifest(dir, { name: "host", dependencies: { keystone_ui: "*" } });
+    writeProvider(join(dir, "node_modules"), {
+      packageName: "keystone_ui",
+      prefix: "keystone",
+      agentsDir: "shipped/agents",
+      agents: [{ name: "scaffold" }],
+    });
+    expect(discoverProviders(dir).flatMap((p) => p.agentFiles.map((f) => basename(f)))).toEqual([
+      "keystone-scaffold.md",
+    ]);
   });
 });
