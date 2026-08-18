@@ -151,6 +151,14 @@ describe("--dir", () => {
 
     expect(existsSync(join(host, ".claude/agents/keystone-scaffold.md"))).toBe(true);
   });
+
+  it("returns a non-zero code when no path follows the flag", async () => {
+    const stderr = vi.spyOn(process.stderr, "write").mockImplementation(() => true);
+    const code = await main(["install", "--dir"], tmpDir());
+    stderr.mockRestore();
+
+    expect(code).toBe(1);
+  });
 });
 
 describe("provider command", () => {
@@ -161,6 +169,27 @@ describe("provider command", () => {
     await main(["provider"], dir);
     stdout.restore();
     expect(existsSync(join(dir, "the-local.config.js"))).toBe(false);
+  });
+
+  it("returns a non-zero code when the target directory is not a package", async () => {
+    const stderr = vi.spyOn(process.stderr, "write").mockImplementation(() => true);
+    const code = await main(["provider"], tmpDir());
+    stderr.mockRestore();
+
+    expect(code).toBe(1);
+  });
+
+  it("names the directory that holds no package manifest", async () => {
+    const dir = tmpDir();
+    let message = "";
+    const stderr = vi.spyOn(process.stderr, "write").mockImplementation((chunk) => {
+      message += String(chunk);
+      return true;
+    });
+    await main(["provider"], dir);
+    stderr.mockRestore();
+
+    expect(message).toContain(`the-local: no package.json in ${dir}`);
   });
 });
 
@@ -259,6 +288,27 @@ describe("check command", () => {
     expect(code).toBe(1);
   });
 
+  it("returns a non-zero code when the target directory is not a package", async () => {
+    const stderr = vi.spyOn(process.stderr, "write").mockImplementation(() => true);
+    const code = await main(["check"], tmpDir());
+    stderr.mockRestore();
+
+    expect(code).toBe(1);
+  });
+
+  it("names the directory that holds no package manifest", async () => {
+    const dir = tmpDir();
+    let message = "";
+    const stderr = vi.spyOn(process.stderr, "write").mockImplementation((chunk) => {
+      message += String(chunk);
+      return true;
+    });
+    await main(["check"], dir);
+    stderr.mockRestore();
+
+    expect(message).toContain(`the-local: no package.json in ${dir}`);
+  });
+
   it("checks the given directory instead of cwd", async () => {
     const packageDir = tmpDir();
     writeCheckablePackage(packageDir);
@@ -268,6 +318,20 @@ describe("check command", () => {
     stdout.restore();
 
     expect(code).toBe(0);
+  });
+
+  it("rejects --dir, which targets a host rather than a package", async () => {
+    let message = "";
+    const stderr = vi.spyOn(process.stderr, "write").mockImplementation((chunk) => {
+      message += String(chunk);
+      return true;
+    });
+    await main(["check", "--dir", tmpDir()], tmpDir());
+    stderr.mockRestore();
+
+    expect(message).toContain(
+      "the-local: check takes the package directory as a positional argument",
+    );
   });
 });
 

@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
 const DEFAULT_AGENTS_DIR = "the-local/agents";
@@ -9,11 +9,21 @@ export function prefixFromName(packageName: string): string {
   return packageName.replace(/^@[^/]+\//, "");
 }
 
+type PackageManifest = Record<string, unknown> & { name: string };
+
+export function readPackageManifest(packageDir: string): PackageManifest {
+  const manifestPath = join(packageDir, "package.json");
+  if (!existsSync(manifestPath)) {
+    throw new Error(
+      `the-local: no package.json in ${packageDir}; run this from the package's root directory`,
+    );
+  }
+  return JSON.parse(readFileSync(manifestPath, "utf8")) as PackageManifest;
+}
+
 export function scaffoldProvider(packageDir: string): { prefix: string } {
   const manifestPath = join(packageDir, "package.json");
-  const manifest = JSON.parse(readFileSync(manifestPath, "utf8")) as Record<string, unknown> & {
-    name: string;
-  };
+  const manifest = readPackageManifest(packageDir);
 
   const declaration = (manifest["the-local"] ?? {}) as { prefix?: string; agentsDir?: string };
   const prefix = declaration.prefix ?? prefixFromName(manifest.name);

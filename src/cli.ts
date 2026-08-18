@@ -9,6 +9,8 @@ import { scaffoldProvider } from "./provider.js";
 
 const COMMANDS = new Set(["install", "refresh"]);
 
+const PACKAGE_COMMANDS = new Set(["provider", "author", "check"]);
+
 const HELP = `the-local — install companion agents declared by your dependencies
 
 Usage: the-local [command] [options]
@@ -43,8 +45,19 @@ function parseHostDir(argv: string[], cwd: string): { hostDir: string; rest: str
   return { hostDir, rest: [...argv.slice(0, index), ...argv.slice(index + 2)] };
 }
 
+function reportFailure(error: unknown): number {
+  process.stderr.write(`${error instanceof Error ? error.message : String(error)}\n`);
+  return 1;
+}
+
 export function run(argv: string[], cwd: string): number {
-  const { hostDir, rest } = parseHostDir(argv, cwd);
+  let hostDir;
+  let rest;
+  try {
+    ({ hostDir, rest } = parseHostDir(argv, cwd));
+  } catch (error) {
+    return reportFailure(error);
+  }
   const command = rest[0] ?? "install";
   if (!COMMANDS.has(command)) {
     process.stderr.write(
@@ -57,8 +70,7 @@ export function run(argv: string[], cwd: string): number {
   try {
     result = installLocals(hostDir);
   } catch (error) {
-    process.stderr.write(`${error instanceof Error ? error.message : String(error)}\n`);
-    return 1;
+    return reportFailure(error);
   }
   const { providers, agents } = result;
   for (const provider of providers) {
@@ -89,8 +101,19 @@ export async function main(
     process.stdout.write(HELP);
     return 0;
   }
+  if (PACKAGE_COMMANDS.has(command ?? "") && argv.includes("--dir")) {
+    process.stderr.write(
+      `the-local: ${command} takes the package directory as a positional argument: the-local ${command} <dir>\n`,
+    );
+    return 1;
+  }
   if (command === "check") {
-    const problems = checkProvider(target ?? cwd);
+    let problems;
+    try {
+      problems = checkProvider(target ?? cwd);
+    } catch (error) {
+      return reportFailure(error);
+    }
     if (problems.length === 0) {
       process.stdout.write("the-local: locals hold the format\n");
       return 0;
@@ -102,8 +125,7 @@ export async function main(
     try {
       authorProvider(target ?? cwd, runner);
     } catch (error) {
-      process.stderr.write(`${error instanceof Error ? error.message : String(error)}\n`);
-      return 1;
+      return reportFailure(error);
     }
     process.stdout.write(
       "the-local: authored locals; review the-local/agents/ and run `the-local check`\n",
@@ -111,7 +133,12 @@ export async function main(
     return 0;
   }
   if (command === "provider") {
-    const { prefix } = scaffoldProvider(target ?? cwd);
+    let prefix;
+    try {
+      ({ prefix } = scaffoldProvider(target ?? cwd));
+    } catch (error) {
+      return reportFailure(error);
+    }
     process.stdout.write(`the-local: wired provider "${prefix}".\n`);
     return 0;
   }
