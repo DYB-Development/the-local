@@ -170,6 +170,19 @@ describe("provider command", () => {
 
     expect(code).toBe(1);
   });
+
+  it("names the directory that holds no package manifest", async () => {
+    const dir = tmpDir();
+    let message = "";
+    const stderr = vi.spyOn(process.stderr, "write").mockImplementation((chunk) => {
+      message += String(chunk);
+      return true;
+    });
+    await main(["provider"], dir);
+    stderr.mockRestore();
+
+    expect(message).toContain(`the-local: no package.json in ${dir}`);
+  });
 });
 
 function writeCheckablePackage(dir: string): void {
