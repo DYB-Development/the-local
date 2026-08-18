@@ -2,6 +2,7 @@ import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { installLocals } from "../src/installer.js";
+import { BEGIN_MARKER } from "../src/trigger.js";
 import { tmpDir, writeHost, writeProvider } from "./helpers.js";
 
 const PROCESS_BEGIN_MARKER = "<!-- the_local:process:begin -->";
@@ -33,6 +34,14 @@ function hostShippingLocals(name: string): string {
     }),
   );
   return dir;
+}
+
+function attemptInstall(dir: string): void {
+  try {
+    installLocals(dir);
+  } catch {
+    return;
+  }
 }
 
 describe("installLocals", () => {
@@ -143,6 +152,56 @@ describe("installLocals", () => {
     expect(readFileSync(join(dir, ".claude/agents/app-review.md"), "utf8")).toBe(
       "SHIPPED BY THE HOST",
     );
+  });
+
+  it("refuses a host directory that does not exist", () => {
+    const missing = join(tmpDir(), "typo");
+
+    expect(() => installLocals(missing)).toThrowError(/the-local:/);
+  });
+
+  it("leaves a host directory that does not exist uncreated", () => {
+    const missing = join(tmpDir(), "typo");
+
+    attemptInstall(missing);
+
+    expect(existsSync(missing)).toBe(false);
+  });
+
+  it("names the directory that holds no package manifest", () => {
+    const dir = tmpDir();
+
+    expect(() => installLocals(dir)).toThrowError(`the-local: no package.json in ${dir}`);
+  });
+
+  it("writes nothing into a directory that holds no package manifest", () => {
+    const dir = tmpDir();
+
+    attemptInstall(dir);
+
+    expect(readdirSync(dir)).toEqual([]);
+  });
+
+  it("writes the delegation block for a host with no provider dependencies", () => {
+    const dir = host([]);
+
+    installLocals(dir);
+
+    expect(readFileSync(join(dir, "CLAUDE.md"), "utf8")).toContain(BEGIN_MARKER);
+  });
+
+  it("writes exactly one delegation block when re-run", () => {
+    const dir = host(["keystone_ui"]);
+    writeProvider(nodeModules(dir), {
+      packageName: "keystone_ui",
+      prefix: "keystone",
+      agents: [{ name: "scaffold" }],
+    });
+
+    installLocals(dir);
+    installLocals(dir);
+
+    expect(readFileSync(join(dir, "CLAUDE.md"), "utf8").split(BEGIN_MARKER)).toHaveLength(2);
   });
 
   it("skips the host's own locals when the host is the-local's own repository", () => {
