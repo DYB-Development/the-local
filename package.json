@@ -44,7 +44,7 @@
     }
   },
   "scripts": {
-    "build": "tsc -p tsconfig.build.json && chmod +x dist/cli.js",
+    "build": "rm -rf dist && tsc -p tsconfig.build.json && chmod +x dist/cli.js",
     "prepare": "pnpm build",
     "prepublishOnly": "pnpm build",
     "typecheck": "tsc --noEmit",
