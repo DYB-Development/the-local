@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { type Agent, agentFilename, toMarkdown } from "../src/agent.js";
+import { type Agent, agentFilename, scopeFromFrontMatter, toMarkdown } from "../src/agent.js";
 
 function build(overrides: Partial<Agent> = {}): Agent {
   return {
@@ -43,5 +43,11 @@ describe("agent", () => {
     expect(toMarkdown(build({ knowledge: ["REFERENCE-BLOB", "RECIPES-BLOB"] }))).toContain(
       "REFERENCE-BLOB\n\nRECIPES-BLOB",
     );
+  });
+});
+
+describe("scopeFromFrontMatter", () => {
+  it("reads the scope declared in the front matter", () => {
+    expect(scopeFromFrontMatter(toMarkdown(build()))).toBe("UI — pages, forms, tables");
   });
 });

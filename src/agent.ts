@@ -35,3 +35,7 @@ export function toMarkdown(agent: Agent): string {
     "",
   ].join("\n");
 }
+
+export function scopeFromFrontMatter(content: string): string | null {
+  return /^scope:[ \t]*(.*)$/m.exec(content)?.[1] ?? null;
+}
