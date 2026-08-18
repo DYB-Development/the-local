@@ -40,4 +40,8 @@ describe("the contract doc", () => {
   it("no longer documents the removed config-file renderer", () => {
     expect(doc("docs/contract.md")).not.toContain("the-local.config.js");
   });
+
+  it("states that discovery needs no package.json declaration", () => {
+    expect(doc("docs/contract.md")).toContain("no declaration is required");
+  });
 });

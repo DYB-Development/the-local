@@ -96,18 +96,24 @@ committed `.md` remain the contract a host reads (§1). See
 
 ### 4.1 The `the-local` declaration block
 
-A provider declares itself to discovery (§2) with a `"the-local"` block in its
-`package.json`. The shape is locked: it must be an object, and every field is
+Discovery finds a provider by its committed `the-local/agents/*.md`: a dependency
+that ships them contributes locals, and no declaration is required. The prefix
+comes from the filename and the delegation scope line (§2) from the agent file's
+`scope:` front matter.
+
+A package may still commit a `"the-local"` block in its `package.json` to
+override that. The shape is locked: it must be an object, and every field is
 optional with a documented default.
 
-| Field       | Type            | Default                                         |
-| ----------- | --------------- | ----------------------------------------------- |
-| `prefix`    | non-empty string | the install name (the dependency's package key) |
-| `scope`     | string or `null` | `null` (renders a bare `<prefix>-* agents` line) |
-| `agentsDir` | non-empty string | `the-local/agents`                              |
+| Field       | Type             | Default                                          |
+| ----------- | ---------------- | ------------------------------------------------ |
+| `prefix`    | non-empty string | the prefix read from the committed filenames     |
+| `scope`     | string or `null` | the `scope:` front matter of a committed agent   |
+| `agentsDir` | non-empty string | `the-local/agents`                               |
 
-Discovery validates the block and fails with a clear, package-named error on a
-non-object declaration or a field of the wrong type (an empty string is treated
-as misconfiguration, not a default). This mirrors the Ruby gem: the declaration
-is the one place a provider customises its namespace, scope phrase, and committed
-agents directory.
+Front matter wins over the declared `scope`; the declaration is the fallback when
+no committed agent carries one. Discovery validates the block and fails with a
+clear, package-named error on a non-object declaration or a field of the wrong
+type (an empty string is treated as misconfiguration, not a default). A package
+that declares the block but ships no committed agents is an error, not a silent
+skip.
