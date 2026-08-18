@@ -11,7 +11,7 @@ export function prefixFromName(packageName: string): string {
 
 type PackageManifest = Record<string, unknown> & { name: string };
 
-function readPackageManifest(packageDir: string): PackageManifest {
+export function readPackageManifest(packageDir: string): PackageManifest {
   const manifestPath = join(packageDir, "package.json");
   if (!existsSync(manifestPath)) {
     throw new Error(

@@ -8,7 +8,7 @@ import {
   type InterfaceDeclaration,
   readInterface,
 } from "./interface.js";
-import { prefixFromName } from "./provider.js";
+import { prefixFromName, readPackageManifest } from "./provider.js";
 
 const FRONT_MATTER_KEYS = ["name", "description", "tools", "scope"];
 
@@ -33,10 +33,7 @@ function missingSections(markdown: string): string[] {
 }
 
 function prefixOf(packageDir: string): string {
-  const manifest = JSON.parse(readFileSync(join(packageDir, "package.json"), "utf8")) as {
-    name: string;
-  };
-  return prefixFromName(manifest.name);
+  return prefixFromName(readPackageManifest(packageDir).name);
 }
 
 function existingLocals(packageDir: string): Local[] {
