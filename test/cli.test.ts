@@ -137,6 +137,18 @@ describe("install output", () => {
   });
 });
 
+describe("install into a directory that is not a host", () => {
+  it("returns a non-zero code for a --dir path that does not exist", async () => {
+    const missing = join(tmpDir(), "typo");
+
+    const stderr = vi.spyOn(process.stderr, "write").mockImplementation(() => true);
+    const code = await main(["install", "--dir", missing], tmpDir());
+    stderr.mockRestore();
+
+    expect(code).toBe(1);
+  });
+});
+
 describe("--dir", () => {
   it("installs into the given host directory instead of cwd", async () => {
     const host = tmpDir();
