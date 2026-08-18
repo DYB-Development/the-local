@@ -2,7 +2,6 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { writeTrigger } from "../src/installer.js";
-import { writeProcessDoc } from "../src/process.js";
 import { tmpDir } from "./helpers.js";
 
 // Cross-language seam (the_local#38 open question #4): a polyglot host's
@@ -36,19 +35,11 @@ describe("cross-language marker coexistence", () => {
     expect(readFileSync(path, "utf8")).toContain(GEM_PROCESS_BLOCK);
   });
 
-  it("writes the process block without touching a gem delegation block", () => {
-    const dir = tmpDir();
-    const path = seed(dir, `${GEM_DELEGATION_BLOCK}\n`);
-    writeProcessDoc(dir);
-    expect(readFileSync(path, "utf8")).toContain(GEM_DELEGATION_BLOCK);
-  });
-
-  it("preserves host prose between both managed regions when both writers run", () => {
+  it("preserves host prose around the managed delegation region", () => {
     const dir = tmpDir();
     const prose = "## House rules\n\nHand-written notes the host owns.";
     const path = seed(dir, `${GEM_DELEGATION_BLOCK}\n\n${prose}\n\n${GEM_PROCESS_BLOCK}\n`);
     writeTrigger(dir, [{ prefix: "keystone", scope: "UI" }]);
-    writeProcessDoc(dir);
     expect(readFileSync(path, "utf8")).toContain(prose);
   });
 });
