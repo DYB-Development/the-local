@@ -2,6 +2,7 @@ import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { installLocals } from "../src/installer.js";
+import { BEGIN_MARKER } from "../src/trigger.js";
 import { tmpDir, writeHost, writeProvider } from "./helpers.js";
 
 const PROCESS_BEGIN_MARKER = "<!-- the_local:process:begin -->";
@@ -179,6 +180,14 @@ describe("installLocals", () => {
     attemptInstall(dir);
 
     expect(readdirSync(dir)).toEqual([]);
+  });
+
+  it("writes the delegation block for a host with no provider dependencies", () => {
+    const dir = host([]);
+
+    installLocals(dir);
+
+    expect(readFileSync(join(dir, "CLAUDE.md"), "utf8")).toContain(BEGIN_MARKER);
   });
 
   it("skips the host's own locals when the host is the-local's own repository", () => {
