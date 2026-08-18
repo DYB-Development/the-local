@@ -90,4 +90,15 @@ describe("discoverProviders", () => {
     writeUndeclaredProvider(dir, "keystone_ui", []);
     expect(discoverProviders(dir)).toEqual([]);
   });
+
+  it("prefers a declared prefix over the one derived from the filename", () => {
+    const dir = tmpDir();
+    writeManifest(dir, { name: "host", dependencies: { keystone_ui: "*" } });
+    writeUndeclaredProvider(dir, "keystone_ui", ["keystone-develop.md"]);
+    writeManifest(join(dir, "node_modules", "keystone_ui"), {
+      name: "keystone_ui",
+      "the-local": { prefix: "custom" },
+    });
+    expect(discoverProviders(dir).map((p) => p.prefix)).toEqual(["custom"]);
+  });
 });
