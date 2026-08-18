@@ -31,3 +31,9 @@ describe("the changelog", () => {
     expect(doc("CHANGELOG.md")).toContain(`## ${version}`);
   });
 });
+
+describe("the contract doc", () => {
+  it("no longer documents the develop-process block install stopped writing", () => {
+    expect(doc("docs/contract.md")).not.toContain("the_local:process");
+  });
+});
