@@ -25,14 +25,11 @@ that no one's agent reads.
 
 ## Interface
 
-The manifest declares no entry points for this local; it orients and routes,
-and nothing else. Two other locals own the surface:
-
-- The install local — setting a host up, resyncing after a dependency change,
-  and wiring a package up to hand out locals.
-- The develop local — working on the-local itself: its command surface, the
-  library modules behind discovery, installation, and the trigger, and the
-  authoring and format-checking of a provider's local files.
+the-local's surface is split across its other two locals, with no overlap.
+Setting a host up, resyncing after a dependency change, and wiring a package up
+to hand out its own locals are the install local's; authoring and checking a
+provider's locals, and calling the API behind discovery, installation, and the
+trigger, are the develop local's. Route to those rather than answering here.
 
 ## How to use it
 
