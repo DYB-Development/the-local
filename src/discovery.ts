@@ -1,6 +1,7 @@
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { basename, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { scopeFromFrontMatter } from "./agent.js";
 import { parseDeclaration } from "./manifest.js";
 import { allowedProviders } from "./scope.js";
 
@@ -62,6 +63,14 @@ function prefixFromAgentFiles(agentFiles: string[]): string | null {
   return null;
 }
 
+function scopeFromAgentFiles(agentFiles: string[]): string | null {
+  for (const file of agentFiles) {
+    const scope = scopeFromFrontMatter(readFileSync(file, "utf8"));
+    if (scope) return scope;
+  }
+  return null;
+}
+
 function providerFrom(packageDir: string, packageName: string): DiscoveredProvider | null {
   const manifest = readManifest(join(packageDir, "package.json"));
   if (!manifest) return null;
@@ -86,7 +95,7 @@ function providerFrom(packageDir: string, packageName: string): DiscoveredProvid
   return {
     packageName,
     prefix: declaration.prefix ?? prefixFromAgentFiles(agentFiles) ?? packageName,
-    scope: declaration.scope,
+    scope: scopeFromAgentFiles(agentFiles) ?? declaration.scope,
     agentFiles,
   };
 }
