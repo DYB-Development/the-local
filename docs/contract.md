@@ -22,6 +22,7 @@ file is YAML frontmatter, then the role body, then the provider's knowledge:
 name: keystone-scaffold
 description: Use PROACTIVELY for UI work.
 tools: Read, Write, Edit
+scope: 
 ---
 
 You build UI.
@@ -30,7 +31,9 @@ API docs.
 ```
 
 - `name` is the qualified name `<prefix>-<name>` — the filename namespace.
-- `description` and `tools` are emitted verbatim, one per line.
+- `description`, `tools`, and `scope` are emitted verbatim, one per line.
+- `scope` is always emitted, empty when the agent declares none; discovery reads
+  it back to build the delegation bullet (§2).
 - A blank line separates the frontmatter, the body, and the knowledge.
 - Array knowledge is joined with a blank line (`\n\n`).
 - The file ends with a single trailing newline.

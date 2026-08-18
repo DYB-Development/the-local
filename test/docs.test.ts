@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
+import { toMarkdown } from "../src/agent.js";
 import { FACETS } from "../src/interface.js";
 
 function doc(name: string): string {
@@ -43,5 +44,18 @@ describe("the contract doc", () => {
 
   it("states that discovery needs no package.json declaration", () => {
     expect(doc("docs/contract.md")).toContain("no declaration is required");
+  });
+
+  it("shows the agent front matter the renderer emits", () => {
+    expect(doc("docs/contract.md")).toContain(
+      toMarkdown({
+        prefix: "keystone",
+        name: "scaffold",
+        description: "Use PROACTIVELY for UI work.",
+        tools: "Read, Write, Edit",
+        body: "You build UI.",
+        knowledge: "API docs.",
+      }),
+    );
   });
 });
