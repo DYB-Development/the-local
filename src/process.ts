@@ -133,7 +133,6 @@ function mergeProcessBlock(existing: string, block: string): string {
 }
 
 export function writeProcessDoc(destination: string, filename = "CLAUDE.md"): void {
-  writeFileSync(join(destination, RULES_FILENAME), `${processRules}\n`);
   const path = join(destination, filename);
   const existing = existsSync(path) ? readFileSync(path, "utf8") : "";
   writeFileSync(path, `${mergeProcessBlock(existing, processBlock())}\n`);

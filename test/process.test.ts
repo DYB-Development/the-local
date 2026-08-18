@@ -4,7 +4,6 @@ import { describe, expect, it } from "vitest";
 import {
   PROCESS_BEGIN_MARKER,
   PROCESS_END_MARKER,
-  RULES_FILENAME,
   processBlock,
   processRules,
   writeProcessDoc,
@@ -28,12 +27,6 @@ describe("processBlock", () => {
 });
 
 describe("writeProcessDoc", () => {
-  it("writes the standalone rules file", () => {
-    const dir = tmpDir();
-    writeProcessDoc(dir);
-    expect(readFileSync(join(dir, RULES_FILENAME), "utf8")).toBe(`${processRules}\n`);
-  });
-
   it("creates CLAUDE.md with the block when absent", () => {
     const dir = tmpDir();
     writeProcessDoc(dir);

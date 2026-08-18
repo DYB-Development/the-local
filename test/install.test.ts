@@ -59,6 +59,19 @@ describe("installLocals", () => {
     expect(() => installLocals(dir)).toThrowError(/keystone_ui/);
   });
 
+  it("does not create a develop_process_rules.md in the host", () => {
+    const dir = host(["keystone_ui"]);
+    writeProvider(nodeModules(dir), {
+      packageName: "keystone_ui",
+      prefix: "keystone",
+      agents: [{ name: "scaffold" }],
+    });
+
+    installLocals(dir);
+
+    expect(existsSync(join(dir, "develop_process_rules.md"))).toBe(false);
+  });
+
   it("propagates the develop-process block into CLAUDE.md", () => {
     const dir = host(["keystone_ui"]);
     writeProvider(nodeModules(dir), {
