@@ -8,6 +8,14 @@ function writeManifest(dir: string, manifest: object): void {
   writeFileSync(join(dir, "package.json"), JSON.stringify(manifest));
 }
 
+function writeUndeclaredProvider(hostDir: string, packageName: string, agentFiles: string[]): void {
+  const pkgDir = join(hostDir, "node_modules", packageName);
+  const agentsDir = join(pkgDir, "the-local", "agents");
+  mkdirSync(agentsDir, { recursive: true });
+  writeManifest(pkgDir, { name: packageName });
+  for (const file of agentFiles) writeFileSync(join(agentsDir, file), "stub");
+}
+
 describe("directDependencies", () => {
   it("includes devDependencies", () => {
     const dir = tmpDir();
@@ -60,5 +68,12 @@ describe("discoverProviders", () => {
       agents: [{ name: "scaffold" }],
     });
     expect(discoverProviders(hostDir).map((p) => p.packageName)).toEqual(["keystone_ui"]);
+  });
+
+  it("discovers a dependency that ships agent files without a the-local declaration", () => {
+    const dir = tmpDir();
+    writeManifest(dir, { name: "host", dependencies: { keystone_ui: "*" } });
+    writeUndeclaredProvider(dir, "keystone_ui", ["keystone-develop.md"]);
+    expect(discoverProviders(dir).map((p) => p.packageName)).toEqual(["keystone_ui"]);
   });
 });

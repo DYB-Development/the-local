@@ -58,11 +58,13 @@ export function discoverProviders(hostDir: string): DiscoveredProvider[] {
     const packageDir = resolvePackageDir(hostDir, dependency);
     if (!packageDir) continue;
     const manifest = readManifest(join(packageDir, "package.json"));
-    if (!manifest || manifest["the-local"] === undefined) continue;
+    if (!manifest) continue;
 
-    const declaration = parseDeclaration(manifest["the-local"], dependency);
+    const declared = manifest["the-local"] !== undefined;
+    const declaration = parseDeclaration(manifest["the-local"] ?? {}, dependency);
     const agentsDir = join(packageDir, declaration.agentsDir);
     if (!existsSync(agentsDir)) {
+      if (!declared) continue;
       throw new Error(
         `the-local: ${dependency} declares the-local locals but ships no committed agents at ` +
           `${declaration.agentsDir}. Build and commit them in ${dependency}.`,
