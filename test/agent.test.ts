@@ -54,4 +54,9 @@ describe("scopeFromFrontMatter", () => {
   it("treats an empty scope value as no scope", () => {
     expect(scopeFromFrontMatter(toMarkdown(build({ scope: undefined })))).toBeNull();
   });
+
+  it("ignores a scope line in the body", () => {
+    const file = ["---", "name: keystone-scaffold", "---", "", "scope: not mine", ""].join("\n");
+    expect(scopeFromFrontMatter(file)).toBeNull();
+  });
 });

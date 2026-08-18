@@ -37,6 +37,7 @@ export function toMarkdown(agent: Agent): string {
 }
 
 export function scopeFromFrontMatter(content: string): string | null {
-  const scope = /^scope:[ \t]*(.*)$/m.exec(content)?.[1].trim() ?? "";
+  const frontMatter = /^---\r?\n([\s\S]*?)\r?\n---/.exec(content)?.[1] ?? "";
+  const scope = /^scope:[ \t]*(.*)$/m.exec(frontMatter)?.[1].trim() ?? "";
   return scope === "" ? null : scope;
 }
