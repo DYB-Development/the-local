@@ -9,6 +9,8 @@ import { scaffoldProvider } from "./provider.js";
 
 const COMMANDS = new Set(["install", "refresh"]);
 
+const PACKAGE_COMMANDS = new Set(["provider", "author", "check"]);
+
 const HELP = `the-local — install companion agents declared by your dependencies
 
 Usage: the-local [command] [options]
@@ -98,6 +100,12 @@ export async function main(
   if (command === "--help" || command === "-h") {
     process.stdout.write(HELP);
     return 0;
+  }
+  if (PACKAGE_COMMANDS.has(command ?? "") && argv.includes("--dir")) {
+    process.stderr.write(
+      `the-local: ${command} takes the package directory as a positional argument: the-local ${command} <dir>\n`,
+    );
+    return 1;
   }
   if (command === "check") {
     let problems;

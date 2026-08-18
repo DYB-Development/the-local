@@ -319,6 +319,20 @@ describe("check command", () => {
 
     expect(code).toBe(0);
   });
+
+  it("rejects --dir, which targets a host rather than a package", async () => {
+    let message = "";
+    const stderr = vi.spyOn(process.stderr, "write").mockImplementation((chunk) => {
+      message += String(chunk);
+      return true;
+    });
+    await main(["check", "--dir", tmpDir()], tmpDir());
+    stderr.mockRestore();
+
+    expect(message).toContain(
+      "the-local: check takes the package directory as a positional argument",
+    );
+  });
 });
 
 describe("build command", () => {
