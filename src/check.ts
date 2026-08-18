@@ -53,6 +53,12 @@ function existingLocals(packageDir: string): Local[] {
     }));
 }
 
+function uncommittedLocalProblems(packageDir: string, locals: Local[]): string[] {
+  if (locals.length > 0) return [];
+  const prefix = prefixOf(packageDir);
+  return FACETS.map((facet) => `${prefix}-${facet}.md: no local committed`);
+}
+
 function frontMatterScope(markdown: string): string | null {
   const block = /^---\n([\s\S]*?)\n---\n/.exec(markdown);
   if (!block) return null;
@@ -137,6 +143,7 @@ export function checkProvider(packageDir: string): string[] {
   const locals = existingLocals(packageDir);
   const declared = readInterface(packageDir);
   return [
+    ...uncommittedLocalProblems(packageDir, locals),
     ...formatProblems(locals),
     ...scopeProblems(locals, declared.scope),
     ...interfaceProblems(locals, declared),
