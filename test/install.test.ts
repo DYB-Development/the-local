@@ -167,6 +167,12 @@ describe("installLocals", () => {
     expect(existsSync(missing)).toBe(false);
   });
 
+  it("names the directory that holds no package manifest", () => {
+    const dir = tmpDir();
+
+    expect(() => installLocals(dir)).toThrowError(`the-local: no package.json in ${dir}`);
+  });
+
   it("skips the host's own locals when the host is the-local's own repository", () => {
     const dir = hostShippingLocals("the-local");
 
