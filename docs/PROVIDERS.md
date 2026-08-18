@@ -30,6 +30,27 @@ source files that define them:
 
 Every field is optional; an omitted facet declares no entry points.
 
+## The three facets
+
+Each entry point belongs to exactly one facet, and each facet becomes one local.
+The split is what keeps the three from repeating one another.
+
+### `info`
+
+The read-only explainer: what the package is, how it is shaped, and which of the
+other two locals owns the surface a reader is after. Most manifests declare no
+`info` entry points at all — this local documents none and routes instead.
+
+### `install`
+
+Hooking the package into a consumer: the commands, config files, and wiring that
+get it running there.
+
+### `develop`
+
+Using the package once it is wired: the functions, types, and CLI verbs a
+consumer calls day to day.
+
 ## 2. Author the locals
 
 ```sh
