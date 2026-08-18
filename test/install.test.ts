@@ -190,6 +190,20 @@ describe("installLocals", () => {
     expect(readFileSync(join(dir, "CLAUDE.md"), "utf8")).toContain(BEGIN_MARKER);
   });
 
+  it("writes exactly one delegation block when re-run", () => {
+    const dir = host(["keystone_ui"]);
+    writeProvider(nodeModules(dir), {
+      packageName: "keystone_ui",
+      prefix: "keystone",
+      agents: [{ name: "scaffold" }],
+    });
+
+    installLocals(dir);
+    installLocals(dir);
+
+    expect(readFileSync(join(dir, "CLAUDE.md"), "utf8").split(BEGIN_MARKER)).toHaveLength(2);
+  });
+
   it("skips the host's own locals when the host is the-local's own repository", () => {
     const dir = hostShippingLocals("the-local");
 
