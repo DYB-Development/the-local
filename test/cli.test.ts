@@ -38,7 +38,7 @@ describe("cli run", () => {
     expect(run(["bogus"], tmpDir())).toBe(1);
   });
 
-  it("names only the surviving commands when one is unknown", () => {
+  it("names every valid command when one is unknown", () => {
     let message = "";
     const stderr = vi.spyOn(process.stderr, "write").mockImplementation((chunk) => {
       message += String(chunk);
@@ -47,7 +47,7 @@ describe("cli run", () => {
     run(["bogus"], tmpDir());
     stderr.mockRestore();
 
-    expect(message).toContain("expected install, refresh, or provider");
+    expect(message).toContain("expected install, refresh, provider, author, or check");
   });
 
   it("installs a host's locals and returns zero", () => {

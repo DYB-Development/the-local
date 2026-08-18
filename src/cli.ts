@@ -7,20 +7,64 @@ import { checkProvider } from "./check.js";
 import { installLocals } from "./installer.js";
 import { scaffoldProvider } from "./provider.js";
 
-const COMMANDS = new Set(["install", "refresh"]);
+const COMMANDS = [
+  {
+    name: "install",
+    usage: "install",
+    summary: "Install agents into the host (default)",
+    runsInHost: true,
+  },
+  {
+    name: "refresh",
+    usage: "refresh",
+    summary: "Re-install agents into the host",
+    runsInHost: true,
+  },
+  {
+    name: "provider",
+    usage: "provider [dir]",
+    summary: "Wire the current package up as a provider",
+    runsInHost: false,
+  },
+  {
+    name: "author",
+    usage: "author [dir]",
+    summary: "Write a provider's locals from its interface manifest",
+    runsInHost: false,
+  },
+  {
+    name: "check",
+    usage: "check [dir]",
+    summary: "Verify a provider's committed locals against its manifest",
+    runsInHost: false,
+  },
+];
 
-const PACKAGE_COMMANDS = new Set(["provider", "author", "check"]);
+const SUMMARY_COLUMN = 19;
+
+const HOST_COMMANDS = new Set(
+  COMMANDS.filter(({ runsInHost }) => runsInHost).map(({ name }) => name),
+);
+
+const PACKAGE_COMMANDS = new Set(
+  COMMANDS.filter(({ runsInHost }) => !runsInHost).map(({ name }) => name),
+);
+
+function listCommandNames(): string {
+  const names = COMMANDS.map(({ name }) => name);
+  return `${names.slice(0, -1).join(", ")}, or ${names[names.length - 1]}`;
+}
+
+const COMMAND_SUMMARIES = COMMANDS.map(
+  ({ usage, summary }) => `  ${usage.padEnd(SUMMARY_COLUMN)}${summary}`,
+).join("\n");
 
 const HELP = `the-local — install companion agents declared by your dependencies
 
 Usage: the-local [command] [options]
 
 Commands:
-  install            Install agents into the host (default)
-  refresh            Re-install agents into the host
-  provider [dir]     Wire the current package up as a provider
-  author [dir]       Write a provider's locals from its interface manifest
-  check [dir]        Verify a provider's committed locals against its manifest
+${COMMAND_SUMMARIES}
 
 Options:
   --dir <path>       Target a host directory other than the current one
@@ -59,9 +103,9 @@ export function run(argv: string[], cwd: string): number {
     return reportFailure(error);
   }
   const command = rest[0] ?? "install";
-  if (!COMMANDS.has(command)) {
+  if (!HOST_COMMANDS.has(command)) {
     process.stderr.write(
-      `the-local: unknown command "${command}" (expected install, refresh, or provider)\n`,
+      `the-local: unknown command "${command}" (expected ${listCommandNames()})\n`,
     );
     return 1;
   }
