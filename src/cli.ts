@@ -43,8 +43,19 @@ function parseHostDir(argv: string[], cwd: string): { hostDir: string; rest: str
   return { hostDir, rest: [...argv.slice(0, index), ...argv.slice(index + 2)] };
 }
 
+function reportFailure(error: unknown): number {
+  process.stderr.write(`${error instanceof Error ? error.message : String(error)}\n`);
+  return 1;
+}
+
 export function run(argv: string[], cwd: string): number {
-  const { hostDir, rest } = parseHostDir(argv, cwd);
+  let hostDir;
+  let rest;
+  try {
+    ({ hostDir, rest } = parseHostDir(argv, cwd));
+  } catch (error) {
+    return reportFailure(error);
+  }
   const command = rest[0] ?? "install";
   if (!COMMANDS.has(command)) {
     process.stderr.write(
@@ -57,8 +68,7 @@ export function run(argv: string[], cwd: string): number {
   try {
     result = installLocals(hostDir);
   } catch (error) {
-    process.stderr.write(`${error instanceof Error ? error.message : String(error)}\n`);
-    return 1;
+    return reportFailure(error);
   }
   const { providers, agents } = result;
   for (const provider of providers) {
@@ -94,8 +104,7 @@ export async function main(
     try {
       problems = checkProvider(target ?? cwd);
     } catch (error) {
-      process.stderr.write(`${error instanceof Error ? error.message : String(error)}\n`);
-      return 1;
+      return reportFailure(error);
     }
     if (problems.length === 0) {
       process.stdout.write("the-local: locals hold the format\n");
@@ -108,8 +117,7 @@ export async function main(
     try {
       authorProvider(target ?? cwd, runner);
     } catch (error) {
-      process.stderr.write(`${error instanceof Error ? error.message : String(error)}\n`);
-      return 1;
+      return reportFailure(error);
     }
     process.stdout.write(
       "the-local: authored locals; review the-local/agents/ and run `the-local check`\n",
@@ -121,8 +129,7 @@ export async function main(
     try {
       ({ prefix } = scaffoldProvider(target ?? cwd));
     } catch (error) {
-      process.stderr.write(`${error instanceof Error ? error.message : String(error)}\n`);
-      return 1;
+      return reportFailure(error);
     }
     process.stdout.write(`the-local: wired provider "${prefix}".\n`);
     return 0;

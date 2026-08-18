@@ -151,6 +151,14 @@ describe("--dir", () => {
 
     expect(existsSync(join(host, ".claude/agents/keystone-scaffold.md"))).toBe(true);
   });
+
+  it("returns a non-zero code when no path follows the flag", async () => {
+    const stderr = vi.spyOn(process.stderr, "write").mockImplementation(() => true);
+    const code = await main(["install", "--dir"], tmpDir());
+    stderr.mockRestore();
+
+    expect(code).toBe(1);
+  });
 });
 
 describe("provider command", () => {
