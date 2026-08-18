@@ -83,4 +83,11 @@ describe("discoverProviders", () => {
     writeUndeclaredProvider(dir, "keystone_ui", ["keystone-develop.md"]);
     expect(discoverProviders(dir).map((p) => p.prefix)).toEqual(["keystone"]);
   });
+
+  it("skips a dependency whose undeclared agents directory holds no agent files", () => {
+    const dir = tmpDir();
+    writeManifest(dir, { name: "host", dependencies: { keystone_ui: "*" } });
+    writeUndeclaredProvider(dir, "keystone_ui", []);
+    expect(discoverProviders(dir)).toEqual([]);
+  });
 });

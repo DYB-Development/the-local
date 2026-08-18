@@ -84,6 +84,7 @@ export function discoverProviders(hostDir: string): DiscoveredProvider[] {
       .filter((entry) => entry.endsWith(".md"))
       .sort()
       .map((entry) => join(agentsDir, entry));
+    if (!declared && agentFiles.length === 0) continue;
 
     providers.push({
       packageName: dependency,
