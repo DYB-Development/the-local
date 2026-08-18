@@ -145,6 +145,12 @@ describe("installLocals", () => {
     );
   });
 
+  it("refuses a host directory that does not exist", () => {
+    const missing = join(tmpDir(), "typo");
+
+    expect(() => installLocals(missing)).toThrowError(/the-local:/);
+  });
+
   it("skips the host's own locals when the host is the-local's own repository", () => {
     const dir = hostShippingLocals("the-local");
 

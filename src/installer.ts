@@ -36,7 +36,14 @@ export interface InstallResult {
   agents: string[];
 }
 
+function requireHost(hostDir: string): void {
+  if (!existsSync(hostDir)) {
+    throw new Error(`the-local: no such directory: ${hostDir}`);
+  }
+}
+
 export function installLocals(hostDir: string): InstallResult {
+  requireHost(hostDir);
   const providers = discoverProviders(hostDir);
   const agents = installAgents(hostDir, providers);
   writeTrigger(hostDir, providers);
