@@ -36,4 +36,8 @@ describe("the contract doc", () => {
   it("no longer documents the develop-process block install stopped writing", () => {
     expect(doc("docs/contract.md")).not.toContain("the_local:process");
   });
+
+  it("no longer documents the removed config-file renderer", () => {
+    expect(doc("docs/contract.md")).not.toContain("the-local.config.js");
+  });
 });

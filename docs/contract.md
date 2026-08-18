@@ -85,14 +85,14 @@ where a provider belongs.
 
 ## 4. Authoring a provider
 
-`the-local provider [dir]` turns a package into a provider (the analog of Ruby's
-`the_local:provider` generator): it writes a starter `the-local.config.js` —
-plain ESM data (`prefix`, `scope`, `agents`) with no runtime dependency on
-the-local — adds the `"the-local"` block and `the-local/agents` to the package's
-`files`, and renders the initial committed `.md`. After editing the config,
-`the-local build [dir]` re-renders the committed agents from it. The committed
-`.md` remain the contract a host reads (§1); the config is only the source they
-are built from.
+A provider commits its locals; nothing is rendered at install time. It declares
+its public interface in `the-local/interface.json`, writes the three facet locals
+from that manifest with `the-local author [dir]`, and verifies the committed
+files against it with `the-local check [dir]`. `the-local provider [dir]` (the
+analog of Ruby's `the_local:provider` generator) is wiring only: it writes the
+`"the-local"` block and adds the agents directory to the package's `files`. The
+committed `.md` remain the contract a host reads (§1). See
+[`PROVIDERS.md`](./PROVIDERS.md).
 
 ### 4.1 The `the-local` declaration block
 
